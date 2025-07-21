@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->enum('plan_type',['basic', 'premium', 'enterprise'])->default('basic');
             $table->enum('status',['active', 'inactive','expired', 'cancelled'])->default('inactive');
             $table->enum('payment_status',['pending', 'paid','failed', 'refunded'])->default('pending');
