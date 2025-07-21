@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Laravel\Sanctum\HasApiTokens;
 class AuthController extends Controller
 {
     public function login(Request $request){
@@ -20,8 +21,9 @@ class AuthController extends Controller
                 'message' => 'Login Gagal'
             ], 401);
         }
+        
 
-        $token = $user->createToken('api-token')->plainTextToken;
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message'=>'Login berhasil',
@@ -49,7 +51,7 @@ class AuthController extends Controller
             'role' => $validate['role'],
         ]);
 
-        $token = $user->createToken('api-token')->plainTextToken;
+        $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json([
             'message'=> 'Berhasil buat akun',
             'token' => $token,

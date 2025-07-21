@@ -35,13 +35,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/guru/{userId}/approve', [AuthController::class, 'approveGuruRegistration']);
         Route::delete('/guru/{userId}/reject', [AuthController::class, 'rejectGuruRegistration']);
     });
-    Route::group(['middleware' => 'role:teacher'], function() {
+    Route::group(['middleware' => 'role:guru'], function() {
         Route::apiResource('exams', ExamController::class);
         Route::apiResource('questions', QuestionController::class);
         Route::apiResource('options', SystemSettingController::class);
     });
     Route::group(['middleware' => 'role:user'], function() {
-        Route::apiResource('exams', ExamController::class);
+        Route::get('/exam/{exam}', [ExamController::class, 'show']);
+        Route::get('exams', [ExamController::class, 'index']);
         Route::apiResource('questions', QuestionController::class);
         Route::apiResource('options', SystemSettingController::class);
     });

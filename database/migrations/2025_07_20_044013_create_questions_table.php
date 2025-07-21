@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->foreignId('exam_id')->constrained()->cascadeOnDelete();
-            $table->text('qeustion');
+            $table->text('question');
             $table->enum('type', ['multiple', 'essay', 'true_false'])->default('multiple');
             $table->json('options')->nullable(); // For multiple choice options
             $table->string('correct_answer')->nullable(); // For essay or true/false questions
