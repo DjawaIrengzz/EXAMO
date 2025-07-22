@@ -2,39 +2,100 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\QuestionsRequest;
+use App\Models\Questions;
+use App\Services\Interface\QuestionServiceInteface;
 use Illuminate\Http\Request;
+use Symfony\Component\Console\Question\Question;
 
 class QuestionController extends Controller
 {
-    public function store(Request $request){
-        $validated = $request->validate([
-            'exam_id' => 'required|exists:exams,id',
-            'question' => 'required|string',
-            'type' => 'in:multiple,essay,true_false',
-            'options' => 'nullable|array',
-            'correct_answer' => 'nullable|string',
-            'explanation' => 'nullable|string',
-            'image' => 'nullable|image|max:2048',
-            'order' => 'integer|min:0',
-            'is_active' => 'boolean',
-        ]);
-        if ($validated['type'] === 'multiple'){
-            if (empty($validated['options'])|| !is_array($validated['options'])){
-                return response()->json(['error' => 'Opsi diharuskan banyak'], 422);
-            }
-        if(!isset($validated['correct_answer'])){
-            return response()->json(['error' => 'Jawaban benar harus diisi untuk pertanyaan pilihan ganda'], 422);
-        }
-        $validated['options'] =json_encode($validated['options']);
+    protected $questionService;
 
-    }else{
-        $validated['options'] = null;
+    public function index(Request $request)
+    {
+        $search = $request->query('search');
+
+        $query = Questions::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('question', 'like', '%' . $search . '%')
+                    ->orWhereHas('exam', function ($q2) use ($search) {
+                        $q2->where('title', 'like', '%' . $search . '%');
+                    });
+            });
+        }
+
+        return response()->json([
+            'data' => $query->paginate(10),
+            'message' => 'Questions retrieved successfully',
+            'status' => 200
+        ]);
     }
-    $validated['is_active'] = $request->has('is_active');
-    $question = Question::create($validated);
-    return response()->json([
-        'message' => 'Sukses dibuat',
-        'question' => $question,
-    ]);
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(QuestionsRequest $request)
+    {   
+        $validated = $request->validated();
+
+        if(isset($validated['options'])){
+            $validated['options'] = json_encode($validated['options']);
+        }
+        
+        Questions::create($validated);
+
+        return response()
+            ->json([
+                'message' => 'Question created successfully',
+                'question' => $request->validated()
+            ], 201);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $data = Questions::findOrFail($id);
+
+        return response()->json([
+            'data' => $data,
+            'message' => 'Question retrieved successfully',
+            'status' => 200
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(QuestionsRequest $request, string $id)
+    {
+        $question = Questions::findOrFail($id);
+        $validated = $request->validated();
+
+        if(isset($validated['options'])){
+            $validated['options'] = json_encode($validated['options']);
+        }
+
+        $question->update($validated);
+
+        return response()->json([
+            'message' => 'Question updated successfully',
+            'question' => $question
+        ], 200);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $question = Questions::findOrFail($id);
+        $question->delete();
+
+        return response()->json(null, 204);
     }
 }

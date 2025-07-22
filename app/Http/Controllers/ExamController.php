@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-
+use App\Models\Exam;
 class ExamController extends Controller
 {
     public function index(){
@@ -12,20 +12,20 @@ class ExamController extends Controller
     }
     public function store(Request $request){
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
+            'titles' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
-            'creator_id' => 'required|exists:users,id',
+            'category_id' => 'nullable|exists:categories,id',
+            'creator_id' => 'nullable|exists:users,id',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
             'duration_minutes' => 'required|integer|min:1',
             'total_questions' => 'required|integer|min:0',
             'kkm_score' => 'required|integer|max:100',
+            'max_attempts' => 'integer|min:1',
             'status' => 'in:draft,aktif,nonaktif,berlangsung,selesai',
             'show_result' => 'boolean',
             'shuffle_question' => 'boolean',
             'shuffle_option' => 'boolean',
-            'max_attempts' => 'integer|min:1',
             'instructions' => 'nullable|string',
         ]);
         $validated['token'] = Str::upper(Str::random(6));
@@ -46,7 +46,7 @@ class ExamController extends Controller
         $exam = Exam::findOrFail($id);
         $this->authorize('update', $exam);
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
+            'titles' => 'required|string|max:255',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'start_time' => 'required|date',

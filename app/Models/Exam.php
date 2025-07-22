@@ -8,7 +8,11 @@ use LDAP\Result;
 class Exam extends Model
 {
     protected $fillable = [
-        "title","category_id","created_by","description","start_time","end_time"
+    'titles', 'description', 'token', 'category_id', 'created_by',
+    'start_time', 'end_time', 'duration_minutes', 'total_questions',
+    'kkm_score', 'status', 'shuffle_question', 'shuffle_option',
+    'show_result', 'max_attempts', 'instructions'
+
     ];
     public function creator(){
         return $this->belongsTo(User::class);

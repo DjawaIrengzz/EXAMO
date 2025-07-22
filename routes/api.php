@@ -42,8 +42,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::group(['middleware' => 'role:user'], function() {
         Route::get('/exam/{exam}', [ExamController::class, 'show']);
-        Route::get('exams', [ExamController::class, 'index']);
-        Route::apiResource('questions', QuestionController::class);
+        Route::get('/exam', [ExamController::class, 'index']);
+        Route::get('/questions', [QuestionController::class,'index']);
+        Route::get('/questions/{question}', [QuestionController::class,'show']);
         Route::apiResource('options', SystemSettingController::class);
     });
 });
