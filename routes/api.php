@@ -1,5 +1,7 @@
 <?php
-
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Http\Request;
+use Illuminate\Cache\RateLimiting\Limit;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\UserAnswerController;
 use Illuminate\Support\Facades\Route;
@@ -15,7 +17,9 @@ use App\Http\Controllers\DashboardController;
 // | Semua route di sini memakai:
 // | - auth:sanctum
 // | - throttle:api  (60 req/min per user/IP)
-
+RateLimiter::for('api', function (Request $request) {
+    return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
+});
 
 Route::middleware(['throttle:api'])->group(function () {
     // Public endpoints (no auth)

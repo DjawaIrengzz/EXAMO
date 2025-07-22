@@ -1,6 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Requests\AuthRequest;
+use App\Http\Requests\ChangePassword;
+use App\Http\Requests\ForgotPassword;
+use App\Http\Requests\UpdatePassword;
+use App\Http\Requests\ResetPassword;
 use Dotenv\Exception\ValidationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -11,10 +16,7 @@ use Laravel\Sanctum\HasApiTokens;
 class AuthController extends Controller
 {
     public function login(Request $request){
-        $credential= $request->validate([
-            'email' => 'required|email',
-            'password'=> 'required',
-        ]);
+        $credential= $request->validate();
         $user = User::where('email', $credential['email'])->first();
         if (!$user || !Hash::check($credential['password'], $user->password)) {
             return response()->json([
@@ -37,13 +39,8 @@ class AuthController extends Controller
         ],200);
     }
 
-    public function register(Request $request){
-        $validate = $request->validate([
-            'name' => 'required|string',
-            'email'=> 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:user,guru'
-        ]);
+    public function register(AuthRequest $request){
+        $validate = $request->validate();
         $user = User::create([
             'name' => $validate['name'],
             'email'=> $validate['email'],
@@ -71,22 +68,15 @@ class AuthController extends Controller
             'message'=> 'Berhasil logout'
         ]);
     }
-    public function forgotPassword(Request $request){
-        $request->validate([
-            'email' => 'required|email',
-        ]);
+    public function forgotPassword(ForgotPassword $request){
+
         $status = Password::sendResetLink($request->only('email'));
         return $status === Password::RESET_LINK_SENT
         ? response()->json(['message' => 'Reset Link Sended'])
         : response()->json(['message' => 'Unable send the link'],401);
 
     }
-    public function resetPassword(Request $request){
-        $request ->validate([
-            'email' => 'required|email',
-            'token' => 'required',
-            'password' => 'required|min:8|confirmed'
-        ]);
+    public function resetPassword(ResetPassword $request){
 
         $status = Password::reset(
             $request->only(
@@ -112,11 +102,8 @@ class AuthController extends Controller
                 ]);
     }
 
-    public function update(Request $request){
-        $request->validate([
-            'name'=> 'required|string',
-            'email' => 'required|email|unique:users,email'. $request->user()->id,
-        ]);
+    public function update(UpdatePassword $request){
+
         $user = $request->user();
         $user->update($request->only('name', 'email'));
         return response()->json([
@@ -125,11 +112,8 @@ class AuthController extends Controller
         ]);
     }
 
-    public function changePassword(Request $request){
-        $request->validate([
-            'current_password'=> 'required',
-            'new_password' => 'required|min:8|confirmed'
-        ]);
+    public function changePassword(ChangePassword $request){
+
         $user = $request->user();
 
         if(!Hash::check($request->current_password,$user->password)){
