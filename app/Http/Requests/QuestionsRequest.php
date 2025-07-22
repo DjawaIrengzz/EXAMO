@@ -31,7 +31,7 @@ class QuestionsRequest extends FormRequest
             'explanation' => 'nullable|string',
             'image' => 'nullable|image|max:2048', 
             'order' => 'nullable|string',
-            'is_active' => 'boolean'
+            'is_active' => 'required|boolean'
         ];
         
     }

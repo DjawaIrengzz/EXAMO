@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\UserAnswerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FaceAuthController;
@@ -35,12 +36,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/guru/{userId}/approve', [AuthController::class, 'approveGuruRegistration']);
         Route::delete('/guru/{userId}/reject', [AuthController::class, 'rejectGuruRegistration']);
     });
-    Route::group(['middleware' => 'role:guru'], function() {
+    Route::middleware('role:guru')->prefix('guru')->group( function() {
         Route::apiResource('exams', ExamController::class);
-        Route::apiResource('questions', QuestionController::class);
-        Route::apiResource('options', SystemSettingController::class);
+        Route::apiResource('exams.questions', QuestionController::class)->shallow();
+
     });
     Route::group(['middleware' => 'role:user'], function() {
+        Route::post('exams{exam}/answers', [UserAnswerController::class, 'store']);
+        Route::get('exams', [ExamController::class, 'available']);
         Route::get('/exam/{exam}', [ExamController::class, 'show']);
         Route::get('/exam', [ExamController::class, 'index']);
         Route::get('/questions', [QuestionController::class,'index']);
