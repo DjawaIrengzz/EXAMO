@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -52,12 +53,15 @@ Route::middleware(['throttle:api'])->group(function () {
         // Guru-only
         Route::middleware('role:guru')->prefix('guru')->group(function () {
             Route::apiResource('exams',           ExamController::class);
-            Route::apiResource('exams.questions', QuestionController::class)
+            Route::apiResource('exams.questions', QuestionController::class);
+            Route::apiResource('categories', CategoryController::class)
                  ->shallow();
         });
 
         // User-only (siswa)
         Route::middleware('role:user')->group(function () {
+            Route::post('categories',    [CategoryController::class, 'store']);
+            Route::post('categories/{categories}',    [CategoryController::class, 'show']);
             Route::post('exams/{exam}/answers',    [UserAnswerController::class, 'store']);
             Route::get('exams',                    [ExamController::class, 'available']);
             Route::get('exam/{exam}',              [ExamController::class, 'show']);

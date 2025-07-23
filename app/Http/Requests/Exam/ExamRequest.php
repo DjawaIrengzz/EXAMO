@@ -25,7 +25,6 @@ class ExamRequest extends FormRequest
             'titles' => 'required|string|max:255',
             'description' => 'nullable|string',
             'category_id' => 'nullable|exists:categories,id',
-            'creator_id' => 'nullable|exists:users,id',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
             'duration_minutes' => 'required|integer|min:1',
