@@ -30,7 +30,6 @@ Route::middleware(['throttle:api'])->group(function () {
 
     // Protected: harus login
     Route::middleware('auth:sanctum')->group(function () {
-        Route::apiResource('barangs', BarangController::class);
         Route::post('/change-password', [AuthController::class, 'changePassword']);
         Route::put('/update-password',  [AuthController::class, 'update']);
 
