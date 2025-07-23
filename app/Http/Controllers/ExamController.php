@@ -9,7 +9,7 @@ use App\Models\Exam;
 class ExamController extends Controller
 {
     public function index(){
-        $exams = Exam::all('category', 'creator')->latest()->get();
+        $exams = Exam::with(['category:id,name', 'creator:id,name,email'])->latest()->paginate(10);
         return response()->json($exams);
     }
     public function store(ExamRequest $request){
