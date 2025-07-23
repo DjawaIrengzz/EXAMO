@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Http\Requests\ExamRequest;
-use App\Http\Requests\UpdateExamRequest;
+use App\Http\Requests\Exam\ExamRequest;
+use App\Http\Requests\Exam\UpdateExamRequest;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\Exam;

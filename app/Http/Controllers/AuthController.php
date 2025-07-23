@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 use App\Http\Requests\AuthRequest;
-use App\Http\Requests\ChangePassword;
-use App\Http\Requests\ForgotPassword;
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\RegisterRequest;
-use App\Http\Requests\UpdatePassword;
-use App\Http\Requests\ResetPassword;
+use App\Http\Requests\Auth\ChangePassword;
+use App\Http\Requests\Auth\ForgotPassword;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\UpdatePassword;
+use App\Http\Requests\Auth\ResetPassword;
 use Dotenv\Exception\ValidationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;

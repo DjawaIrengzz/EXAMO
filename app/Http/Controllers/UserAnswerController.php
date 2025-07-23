@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreUserAnswerRequest;
-use App\Http\Requests\UpdateUserAnswer;
+use App\Http\Requests\UserAnswer\StoreUserAnswerRequest;
+use App\Http\Requests\UserAnswer\UpdateUserAnswer;
 use App\Models\UserAnswer;
 use Illuminate\Http\Request;
 

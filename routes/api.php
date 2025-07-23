@@ -60,7 +60,8 @@ Route::middleware(['throttle:api'])->group(function () {
 
         // User-only (siswa)
         Route::middleware('role:user')->group(function () {
-            Route::post('categories',    [CategoryController::class, 'store']);
+            Route::post('categories',    [CategoryController::class, 'indexActive']);
+            Route::post('categories/{category:slug}',    [CategoryController::class, 'showBySlug']);
             Route::post('categories/{categories}',    [CategoryController::class, 'show']);
             Route::post('exams/{exam}/answers',    [UserAnswerController::class, 'store']);
             Route::get('exams',                    [ExamController::class, 'available']);
