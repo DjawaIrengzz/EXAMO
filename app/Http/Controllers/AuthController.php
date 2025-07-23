@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AuthRequest;
 use App\Http\Requests\ChangePassword;
 use App\Http\Requests\ForgotPassword;
+use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\UpdatePassword;
 use App\Http\Requests\ResetPassword;
 use Dotenv\Exception\ValidationException;
@@ -39,7 +40,7 @@ class AuthController extends Controller
         ],200);
     }
 
-    public function register(AuthRequest $request){
+    public function register(RegisterRequest $request){
         $validate = $request->validate();
         $user = User::create([
             'name' => $validate['name'],
