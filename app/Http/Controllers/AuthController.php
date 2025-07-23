@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AuthRequest;
 use App\Http\Requests\ChangePassword;
 use App\Http\Requests\ForgotPassword;
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\UpdatePassword;
 use App\Http\Requests\ResetPassword;
@@ -16,8 +17,8 @@ use Illuminate\Support\Facades\Password;
 use Laravel\Sanctum\HasApiTokens;
 class AuthController extends Controller
 {
-    public function login(Request $request){
-        $credential= $request->validate();
+    public function login(LoginRequest $request){
+        $credential= $request->validated();
         $user = User::where('email', $credential['email'])->first();
         if (!$user || !Hash::check($credential['password'], $user->password)) {
             return response()->json([
