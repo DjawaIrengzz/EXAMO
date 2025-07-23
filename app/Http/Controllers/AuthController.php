@@ -41,7 +41,7 @@ class AuthController extends Controller
     }
 
     public function register(RegisterRequest $request){
-        $validate = $request->validate();
+        $validate = $request->validated();
         $user = User::create([
             'name' => $validate['name'],
             'email'=> $validate['email'],
