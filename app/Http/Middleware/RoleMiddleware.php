@@ -15,10 +15,12 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
-    if(!$request->user()|| !$request->user()->role!==$role){
+
+    if(!$request->user()|| $request->user()->role !== $role){
         return response()->json([
             'message' => 'Unauthorized. Route ini hanya untuk role'. $role
         ],403);
     }
+    return $next($request);
     }
 }
