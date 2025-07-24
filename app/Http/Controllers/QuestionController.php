@@ -8,6 +8,7 @@ use App\Services\Interface\QuestionServiceInteface;
 use Illuminate\Http\Request;
 use Symfony\Component\Console\Question\Question;
 use App\Services\BankSoalService;
+use App\Http\Requests\BankRequest;
 
 class QuestionController extends Controller
 {

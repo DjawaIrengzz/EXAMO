@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Question;
+use App\Models\Questions;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class BankSoalService
@@ -18,7 +18,7 @@ class BankSoalService
      */
     public function list(array $filters = [], ?string $search = null, bool $shuffle = false, int $perPage = 15): LengthAwarePaginator
     {
-        $query = Question::query()->where('is_active', true);
+        $query = Questions::query()->where('is_active', true);
 
         if (!empty($filters['exam_id'])) {
             $query->where('exam_id', $filters['exam_id']);
