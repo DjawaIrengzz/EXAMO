@@ -59,14 +59,17 @@ Route::middleware(['throttle:api'])->group(function () {
         });
 
         // User-only (siswa)
-        Route::middleware('role:user')->group(function () {
-            Route::post('categories',    [CategoryController::class, 'indexActive']);
-            Route::post('categories/{category:slug}',    [CategoryController::class, 'showBySlug']);
-            Route::post('categories/{categories}',    [CategoryController::class, 'show']);
+        Route::middleware('role:user')->prefix('user')->group(function () {
+
+            Route::get('categories',    [CategoryController::class, 'indexActive']);
+            Route::get('categories/{category:slug}',    [CategoryController::class, 'showBySlug']);
+            Route::get('categories/{categories}',    [CategoryController::class, 'show']);
             Route::post('exams/{exam}/answers',    [UserAnswerController::class, 'store']);
+
             Route::get('exams',                    [ExamController::class, 'available']);
             Route::get('exam/{exam}',              [ExamController::class, 'show']);
             Route::get('exam',                     [ExamController::class, 'index']);
+
             Route::get('questions',                [QuestionController::class, 'index']);
             Route::get('questions/{question}',     [QuestionController::class, 'show']);
             Route::apiResource('options',         SystemSettingController::class);

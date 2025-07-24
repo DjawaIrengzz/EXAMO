@@ -12,6 +12,31 @@ class ExamController extends Controller
         $exams = Exam::with(['category:id,name', 'creator:id,name,email'])->latest()->paginate(10);
         return response()->json($exams);
     }
+    
+    //patch
+    public function partialUpdate(Request $request, $id)
+{
+    $exam = Exam::findOrFail($id);
+    $this->authorize('update', $exam);
+
+    $validated = $request->validate([
+        'title' => 'sometimes|string|max:255',
+        'description' => 'sometimes|string',
+        'status' => 'sometimes|in:draft,published,archived',
+        'shuffle_question' => 'sometimes|boolean',
+        'shuffle_option' => 'sometimes|boolean',
+        'show_result' => 'sometimes|boolean',
+        'max_attempts' => 'sometimes|integer|min:1',
+    ]);
+
+    $exam->update($validated);
+
+    return response()->json([
+        'message' => 'Ujian berhasil diperbarui sebagian',
+        'exam' => $exam
+    ]);
+}
+
     public function store(ExamRequest $request){
         $validated = $request->validated();
             
