@@ -12,6 +12,9 @@ class ExamController extends Controller
         $exams = Exam::with(['category:id,name', 'creator:id,name,email'])->latest()->paginate(10);
         return response()->json($exams);
     }
+    public function available(){
+        
+    }
     
     //patch
     public function partialUpdate(Request $request, $id)

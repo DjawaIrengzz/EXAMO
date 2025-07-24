@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SiswaController;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -52,6 +53,7 @@ Route::middleware(['throttle:api'])->group(function () {
 
         // Guru-only
         Route::middleware('role:guru')->prefix('guru')->group(function () {
+            Route::get('bank-soal', [QuestionController::class, 'bank']);
              Route::get   ('/profile'           , [GuruController::class, 'index']);
             Route::get   ('/profile/{id}'      , [GuruController::class, 'show']);
             Route::put   ('/profile/{id}'      , [GuruController::class, 'update']);
@@ -65,10 +67,10 @@ Route::middleware(['throttle:api'])->group(function () {
         // User-only (siswa)
         Route::middleware('role:user')->prefix('user')->group(function () {
 
-             Route::get   ('/profile'           , [UserController::class, 'index']);
-            Route::get   ('/profile/{id}'      , [UserController::class, 'show']);
-            Route::put   ('/profile/{id}'      , [UserController::class, 'update']);
-            Route::post  ('/profile/avatar'    , [UserController::class, 'updateAvatar']);
+             Route::get   ('/profile'           , [SiswaController::class, 'index']);
+            Route::get   ('/profile/{id}'      , [SiswaController::class, 'show']);
+            Route::put   ('/profile/{id}'      , [SiswaController::class, 'update']);
+            Route::post  ('/profile/avatar'    , [SiswaController::class, 'updateAvatar']);
 
             Route::get('categories',    [CategoryController::class, 'indexActive']);
             Route::get('categories/{category:slug}',    [CategoryController::class, 'showBySlug']);
@@ -82,6 +84,8 @@ Route::middleware(['throttle:api'])->group(function () {
             Route::get('questions',                [QuestionController::class, 'index']);
             Route::get('questions/{question}',     [QuestionController::class, 'show']);
             Route::apiResource('options',         SystemSettingController::class);
+
+            Route::get('bank-soal', [QuestionController::class, 'bank']);
         });
     });
 });

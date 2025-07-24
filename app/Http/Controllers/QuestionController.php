@@ -7,10 +7,12 @@ use App\Models\Questions;
 use App\Services\Interface\QuestionServiceInteface;
 use Illuminate\Http\Request;
 use Symfony\Component\Console\Question\Question;
+use App\Services\BankSoalService;
 
 class QuestionController extends Controller
 {
     protected $questionService;
+    protected BankSoalService $bank;
 
     public function index(Request $request)
     {
@@ -32,6 +34,20 @@ class QuestionController extends Controller
             'message' => 'Questions retrieved successfully',
             'status' => 200
         ]);
+    }
+    public function __construct(BankSoalService $bank){
+        $this->bank = $bank;
+
+    }
+    public function bank(BankRequest $request){
+        $data = $request ->validated();
+
+        $filters = ['exam_id' => $data['exam_id'] ?? null, 'category_id' => $data['category_id'] ?? null];
+        $search = $data ['search'] ?? null;
+        $shuffle = isset($data['shuffle']) && $data['shuffle'] == '1' ;
+        $perPage = $data['per_page'] ?? 15;
+        $paginator = $this->bank->list($filters,$search,$shuffle,$perPage);
+        return response()->json($paginator);
     }
 
     /**

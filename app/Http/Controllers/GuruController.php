@@ -40,7 +40,7 @@ class GuruController
                 'email' => $guru->email,
                 'phone' => $guru->phone_number,
                 'gender' => $guru->gender,
-                'avatar_url' => AvatarHelper::getAvatarUrl($guru, 'guru'),
+                'avatar_url' => AvatarHelper::getAvatarUrl($guru  , 'guru'),
                 'avatar_uploaded' => $guru->avatar ? true : false,
                 'role' => $guru->role,
                 'created_at' => $guru->created_at,
@@ -89,7 +89,7 @@ class GuruController
 
     {
         $guru = auth()->user();
-        $validated = $request->validated();
+        $request->validated();
 
         if ($request->hasFile('avatar')) {
             if ($guru->avatar && Storage::disk('public')->exists($guru->avatar)) {
