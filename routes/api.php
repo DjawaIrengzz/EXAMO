@@ -36,7 +36,7 @@ Route::middleware(['throttle:api'])->group(function () {
         Route::put('/update-password',  [AuthController::class, 'update']);
 
         // Admin-only
-        Route::middleware('role:admin')->group(function () {
+        Route::middleware('role:admin')->prefix('admin')->group(function () {
             Route::post('/register/admin', [AuthController::class, 'registerAdmin']);
 
             // User management

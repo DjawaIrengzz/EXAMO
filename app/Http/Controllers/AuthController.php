@@ -7,7 +7,7 @@ use App\Http\Requests\Auth\ForgotPassword;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\UpdatePassword;
-use App\Http\Requests\Auth\ResetPassword;
+use App\Http\Requests\Auth\ResetPasswordReq;
 use Dotenv\Exception\ValidationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -78,7 +78,7 @@ class AuthController extends Controller
         : response()->json(['message' => 'Unable send the link'],401);
 
     }
-    public function resetPassword(ResetPassword $request){
+    public function resetPassword(ResetPasswordReq $request){
 
         $status = Password::reset(
             $request->only(
