@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateAvatarRequest;
 use Illuminate\Http\Request;
+use App\Helpers\AvatarHelper;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\UpdateAvatarRequest;
 use App\Http\Requests\UpdateBiodataRequest;
 
 class GuruController
@@ -17,7 +19,7 @@ class GuruController
         $guru = auth()->user();
         $token = auth()->user()->currentAccessToken();
 
-        if(!$token) {
+        if (!$token) {
             return response()->json([
                 'message' => 'Token not found',
             ], 404);
@@ -38,7 +40,8 @@ class GuruController
                 'email' => $guru->email,
                 'phone' => $guru->phone_number,
                 'gender' => $guru->gender,
-                'avatar' => $guru->avatar ? asset('storage/' . $guru->avatar) : null,
+                'avatar_url' => AvatarHelper::getAvatarUrl($guru, 'guru'),
+                'avatar_uploaded' => $guru->avatar ? true : false,
                 'role' => $guru->role,
                 'created_at' => $guru->created_at,
                 'status' => $guru->status,
@@ -50,17 +53,6 @@ class GuruController
                 'key' => $token,
             ]
         ]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        return response()
-            ->json([
-                'message' => 'This endpoint is not implemented yet.'
-            ], 501);
     }
 
     /**
@@ -93,13 +85,17 @@ class GuruController
             ], 200);
     }
 
-    public function updateAvatar(UpdateAvatarRequest $reqeust)
+    public function updateAvatar(UpdateAvatarRequest $request)
+
     {
         $guru = auth()->user();
-        $validated = $reqeust->validated();
+        $validated = $request->validated();
 
-        if ($reqeust->hasFile('avatar')) {
-            $path = $reqeust->file('avatar')->store('avatars', 'public');
+        if ($request->hasFile('avatar')) {
+            if ($guru->avatar && Storage::disk('public')->exists($guru->avatar)) {
+                Storage::disk('public')->delete($guru->avatar);
+            }
+            $path = $request->file('avatar')->store('avatars', 'public');
             $guru->avatar = $path;
         }
 
@@ -112,14 +108,25 @@ class GuruController
             ], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroyAvatar()
     {
-        return response()
-            ->json([
-                'message' => 'This endpoint is not implemented yet.'
-            ], 501);
+        $guru = auth()->user();
+
+        if (!$guru->avatar) {
+            return response()->json([
+                "message" => "Avatar not found",
+            ], 404);
+        }
+
+        if (Storage::disk('public')->exists($guru->avatar)) {
+            Storage::disk('public')->delete($guru->avatar);
+        }
+
+        $guru->avatar = null;
+        $guru->save();
+
+        return response()->json([
+            "message" => "Avatar deleted successfully",
+        ], 200);
     }
 }

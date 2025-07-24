@@ -13,7 +13,7 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\DashboardController;
-
+use App\Http\Controllers\GuruController;
 
 // | Semua route di sini memakai:
 // | - auth:sanctum
@@ -52,6 +52,10 @@ Route::middleware(['throttle:api'])->group(function () {
 
         // Guru-only
         Route::middleware('role:guru')->prefix('guru')->group(function () {
+             Route::get   ('/profile'           , [GuruController::class, 'index']);
+            Route::get   ('/profile/{id}'      , [GuruController::class, 'show']);
+            Route::put   ('/profile/{id}'      , [GuruController::class, 'update']);
+            Route::post  ('/profile/avatar'    , [GuruController::class, 'updateAvatar']);
             Route::apiResource('exams',           ExamController::class);
             Route::apiResource('exams.questions', QuestionController::class);
             Route::apiResource('categories', CategoryController::class)
@@ -60,6 +64,11 @@ Route::middleware(['throttle:api'])->group(function () {
 
         // User-only (siswa)
         Route::middleware('role:user')->prefix('user')->group(function () {
+
+             Route::get   ('/profile'           , [UserController::class, 'index']);
+            Route::get   ('/profile/{id}'      , [UserController::class, 'show']);
+            Route::put   ('/profile/{id}'      , [UserController::class, 'update']);
+            Route::post  ('/profile/avatar'    , [UserController::class, 'updateAvatar']);
 
             Route::get('categories',    [CategoryController::class, 'indexActive']);
             Route::get('categories/{category:slug}',    [CategoryController::class, 'showBySlug']);
