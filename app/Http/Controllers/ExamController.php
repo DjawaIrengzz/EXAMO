@@ -12,7 +12,12 @@ class ExamController extends Controller
         $exams = Exam::with(['category:id,name', 'creator:id,name,email'])->latest()->paginate(10);
         return response()->json($exams);
     }
-    public function available(){
+    public function available(Request $request){
+        $user = $request->user();
+        $available = Exam::with('category:id,name')->where('status' , 'published') -> whereDoesntHave('userExams', function($query) use ($user){
+            $query->where('user_id', $user->id);
+        })-> latest()->paginate(10);
+
         
     }
     
