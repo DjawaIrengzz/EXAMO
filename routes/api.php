@@ -56,7 +56,7 @@ Route::middleware(['throttle:api'])->group(function () {
             Route::get('bank-soal', [QuestionController::class, 'bank']);
              Route::get   ('/profile'           , [GuruController::class, 'index']);
             Route::get   ('/profile/{id}'      , [GuruController::class, 'show']);
-            Route::put   ('/profile/{id}'      , [GuruController::class, 'update']);
+            Route::put   ('/profile'      , [GuruController::class, 'update']);
             Route::post  ('/profile/avatar'    , [GuruController::class, 'updateAvatar']);
             Route::apiResource('exams',           ExamController::class);
             Route::apiResource('exams.questions', QuestionController::class);
@@ -69,7 +69,7 @@ Route::middleware(['throttle:api'])->group(function () {
 
              Route::get   ('/profile'           , [SiswaController::class, 'index']);
             Route::get   ('/profile/{id}'      , [SiswaController::class, 'show']);
-            Route::put   ('/profile/{id}'      , [SiswaController::class, 'update']);
+            Route::put   ('/profile'      , [SiswaController::class, 'update']);
             Route::post  ('/profile/avatar'    , [SiswaController::class, 'updateAvatar']);
 
             Route::get('categories',    [CategoryController::class, 'indexActive']);

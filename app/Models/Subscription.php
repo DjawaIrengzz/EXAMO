@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Subscription extends Model
 {
+    public $incrementing = true;
     protected $fillable = [
         "user_id","plan_name","status","started_at","expired_at"
     ];

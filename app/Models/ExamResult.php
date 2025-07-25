@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ExamResult extends Model
 {
+        public $incrementing = true;
     protected $fillable = [
         'exam_id',
         'user_id',

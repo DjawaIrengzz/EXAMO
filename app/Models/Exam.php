@@ -7,6 +7,7 @@ use LDAP\Result;
 
 class Exam extends Model
 {
+        public $incrementing = true;
     protected $fillable = [
     'titles', 'description', 'token', 'category_id', 'created_by',
     'start_time', 'end_time', 'duration_minutes', 'total_questions',

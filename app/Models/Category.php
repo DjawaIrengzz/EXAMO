@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
+    public $incrementing = true;
     use HasFactory;
     protected $fillable = [
         'name', 'slug', 'is_active', 'description'
