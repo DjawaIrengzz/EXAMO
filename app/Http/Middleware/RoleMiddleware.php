@@ -13,14 +13,20 @@ class RoleMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $role): Response
-    {
+public function handle(Request $request, Closure $next, string $role): Response
+{
+    $user = $request->user();
 
-    if(!$request->user()|| $request->user()->role !== $role){
+    if (!$user) {
+        return response()->json(['message' => 'User tidak terautentikasi'], 401);
+    }
+
+    if (strtolower($user->role) !== strtolower($role)) {
         return response()->json([
-            'message' => 'Unauthorized. Route ini hanya untuk role'. $role
-        ],403);
+            'message' => "Role tidak cocok. Role user: {$user->role}, Role dibutuhkan: {$role}"
+        ], 403);
     }
+
     return $next($request);
-    }
+}
 }
