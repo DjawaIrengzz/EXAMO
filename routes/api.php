@@ -1,6 +1,7 @@
 <?php
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SiswaController;
+use App\Http\Controllers\UserExamController;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -77,6 +78,9 @@ Route::middleware(['throttle:api'])->group(function () {
             Route::get('categories/{categories}',    [CategoryController::class, 'show']);
             Route::post('exams/{exam}/answers',    [UserAnswerController::class, 'store']);
 
+             Route::post('{exam}/start', [UserExamController::class, 'start']);
+             Route::get('{exam}/status', [UserExamController::class, 'status']);
+            Route::post('{exam}/finish', [UserExamController::class, 'finish']);
             Route::get('exams',                    [ExamController::class, 'available']);
             Route::get('exam/{exam}',              [ExamController::class, 'show']);
             Route::get('exam',                     [ExamController::class, 'index']);

@@ -15,6 +15,10 @@ class Exam extends Model
     'show_result', 'max_attempts', 'instructions'
 
     ];
+
+    public function userExams(){
+        return $this->hasMany(UserExam::class);
+    }
     public function creator(){
         return $this->belongsTo(User::class);
     }
