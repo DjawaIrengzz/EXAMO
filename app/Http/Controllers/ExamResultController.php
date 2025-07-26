@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreExamResultRequest;
 use App\Models\ExamResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -19,7 +20,7 @@ class ExamResultController extends Controller
         ->paginate($request->query('per_page', 10));
         return response()->json($result);
     }
-    public function store(Request $request){
+    public function store(StoreExamResultRequest $request){
         if (Gate::denies('create' ,ExamResult::class)){
             return response()->json([
                 'message' => 'Forbidden'

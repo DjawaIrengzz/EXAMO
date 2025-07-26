@@ -62,7 +62,12 @@ Route::middleware(['throttle:api'])->group(function () {
             Route::get('history', [AdminController::class, 'history']);
 
             // Ringkasan Keuangan & Grafik
-            Route::get('finance', [AdminController::class, 'finance']);
+            Route::get('finance', [AdminController::class, 'keuangan']);
+
+            // Subscription
+             Route::get('subscriptions', [SubscriptionController::class,'index']);
+            Route::put('subscriptions/{subscription}', [SubscriptionController::class,'update']);
+            Route::get('subscriptions/{subscription}', [SubscriptionController::class,'show']);
         });
 
         });
@@ -72,7 +77,7 @@ Route::middleware(['throttle:api'])->group(function () {
             Route::get('bank-soal', [QuestionController::class, 'bank']);
 
         // 7. Profile
-             Route::get   ('/profile'           , [GuruController::class, 'index']);
+            Route::get   ('/profile'           , [GuruController::class, 'index']);
             Route::get   ('/profile/{id}'      , [GuruController::class, 'show']);
             Route::put   ('/profile'      , [GuruController::class, 'update']);
             Route::post  ('/profile/avatar'    , [GuruController::class, 'updateAvatar']);
@@ -80,6 +85,9 @@ Route::middleware(['throttle:api'])->group(function () {
         // 8. Exam
             Route::apiResource('exams',           ExamController::class);
             Route::apiResource('exams.questions', QuestionController::class);
+
+            Route::get('subscriptions', [SubscriptionController::class,'mySubscriptions']);
+            Route::post('subscriptions', [SubscriptionController::class,'store']);
 
             Route::apiResource('categories', CategoryController::class)
                  ->shallow();
