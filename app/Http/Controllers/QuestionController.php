@@ -14,7 +14,11 @@ class QuestionController extends Controller
 {
     protected $questionService;
     protected BankSoalService $bank;
+    public function __construct(BankSoalService $bank){
+        $this->bank = $bank;
 
+    }
+    
     public function index(Request $request)
     {
         $search = $request->query('search');
@@ -25,7 +29,7 @@ class QuestionController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('question', 'like', '%' . $search . '%')
                     ->orWhereHas('exam', function ($q2) use ($search) {
-                        $q2->where('title', 'like', '%' . $search . '%');
+                        $q2->where('titles', 'like', '%' . $search . '%');
                     });
             });
         }
@@ -35,10 +39,6 @@ class QuestionController extends Controller
             'message' => 'Questions retrieved successfully',
             'status' => 200
         ]);
-    }
-    public function __construct(BankSoalService $bank){
-        $this->bank = $bank;
-
     }
     public function bank(BankRequest $request){
         $data = $request ->validated();
@@ -56,19 +56,22 @@ class QuestionController extends Controller
      */
     public function store(QuestionsRequest $request)
     {   
-        $validated = $request->validated();
+         $validated = $request->validated();
 
-        if(isset($validated['options'])){
-            $validated['options'] = json_encode($validated['options']);
-        }
-        
-        Questions::create($validated);
+    
+    if ($request->hasFile('image')) {
+        $validated['image'] = $request->file('image')
+                                  ->store('questions', 'public');
+    }
 
-        return response()
-            ->json([
-                'message' => 'Question created successfully',
-                'question' => $request->validated()
-            ], 201);
+
+    $question = Questions::create($validated);
+
+    return response()->json([
+        'data'    => $question,
+        'message' => 'Question created successfully',
+        'status'  => 201
+    ], 201);
     }
 
     /**

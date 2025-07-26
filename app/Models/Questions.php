@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Questions extends Model
 {
+    protected $casts = [
+    'options' => 'array',
+    ];
     protected $table = 'questions';
     protected $primaryKey = 'id';
     protected $keyType = 'int';

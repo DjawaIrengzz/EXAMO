@@ -23,8 +23,8 @@ class StoreUserAnswerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'exam_id' =>'required|exists:exam,id',
-            'question_id' => 'required|exists:question,id',
+            'exam_id' =>'required|exists:exams,id',
+            'question_id' => 'required|exists:questions,id',
             'answer' => 'required|string',
         ];
     }
