@@ -16,7 +16,7 @@ use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GuruController;
-
+use App\Http\Controllers\AdminController;
 // | Semua route di sini memakai:
 // | - auth:sanctum
 // | - throttle:api  (60 req/min per user/IP)
@@ -57,6 +57,12 @@ Route::middleware(['throttle:api'])->group(function () {
 
             // 5. Audit Logs
             Route::get  ('audit-logs'             , [AuditLogController::class, 'index']);
+
+            // Riwayat Transaksi
+            Route::get('history', [AdminController::class, 'history']);
+
+            // Ringkasan Keuangan & Grafik
+            Route::get('finance', [AdminController::class, 'finance']);
         });
 
         });
