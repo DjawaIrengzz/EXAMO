@@ -26,6 +26,13 @@ class Questions extends Model
         "is_active"
     ];
 
+    public function exams()
+{
+    return $this->belongsToMany(
+        Exam::class,
+        'exam_question'
+    )->withPivot('order')->withTimestamps();
+}
     public function exam(){
         return $this->belongsTo(Exam::class, 'exam_id');
     }
