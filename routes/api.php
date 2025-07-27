@@ -74,7 +74,7 @@ Route::middleware('throttle:api')->group(function () {
         Route::middleware('role:guru')->prefix('guru')->group(function () {
             // Bank soal
             Route::get('bank-soal',                 [QuestionController::class, 'bank']);
-            Route::post   ('questions/attach', [QuestionController::class,'attach']);
+            Route::post   ('questions/attach', [QuestionController::class,'attachToExam']);
             Route::delete ('questions/{question}', [QuestionController::class,'detach']);
 
             // Profile

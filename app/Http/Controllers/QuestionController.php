@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\Console\Question\Question;
 use App\Services\BankSoalService;
 use App\Http\Requests\BankRequest;
+use Illuminate\Http\JsonResponse;
 
 class QuestionController extends Controller
 {
@@ -57,9 +58,23 @@ class QuestionController extends Controller
             'updated_at' => now()
         ]);
     }
-
     return response()->json(['message' => 'Questions attached to exam successfully']);
 }
+public function detach(Exam $exam, $questionId): JsonResponse
+    {
+
+        if (! $exam->bankQuestions()->where('question_id', $questionId)->exists()) {
+            return response()->json([
+                'message' => "Question dengan ID {$questionId} Tidak tersambung"
+            ], 404);
+        }
+
+        $exam->bankQuestions()->detach($questionId);
+
+        return response()->json([
+            'message' => "Question {$questionId} Diputuskan dengan sukses"
+        ], 200);
+    }
     public function bank(BankRequest $request){
         $data = $request ->validated();
 

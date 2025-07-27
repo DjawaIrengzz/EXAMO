@@ -21,23 +21,27 @@ class ExamController extends Controller
 
         return response()->json($available);
     }
-    
-    public function detach(Exam $exam, $questionId): JsonResponse
-    {
-        // Ensure the relation exists
-        if (! $exam->bankQuestions()->where('question_id', $questionId)->exists()) {
-            return response()->json([
-                'message' => "Question with ID {$questionId} is not attached to this exam."
-            ], 404);
-        }
+    public function attachToExam(Request $request)
+{
+    $data = $request->validate([
+        'exam_id' => 'required|exists:exams,id',
+        'question_ids' => 'required|array',
+        'question_ids.*' => 'exists:questions,id'
+    ]);
 
-        // Detach the question
-        $exam->bankQuestions()->detach($questionId);
-
-        return response()->json([
-            'message' => "Question {$questionId} detached from exam successfully."
-        ], 200);
+    foreach ($data['question_ids'] as $qid) {
+        DB::table('exam_question')->insert([
+            'exam_id' => $data['exam_id'],
+            'question_id' => $qid,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
     }
+
+    return response()->json(['message' => 'Questions attached to exam successfully']);
+}
+
+
     
     //patch
     public function partialUpdate(Request $request, $id)
