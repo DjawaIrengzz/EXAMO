@@ -40,6 +40,26 @@ class QuestionController extends Controller
             'status' => 200
         ]);
     }
+    
+    public function attachToExam(Request $request)
+{
+    $data = $request->validate([
+        'exam_id' => 'required|exists:exams,id',
+        'question_ids' => 'required|array',
+        'question_ids.*' => 'exists:questions,id'
+    ]);
+
+    foreach ($data['question_ids'] as $qid) {
+        DB::table('exam_question')->insert([
+            'exam_id' => $data['exam_id'],
+            'question_id' => $qid,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+    }
+
+    return response()->json(['message' => 'Questions attached to exam successfully']);
+}
     public function bank(BankRequest $request){
         $data = $request ->validated();
 

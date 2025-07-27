@@ -16,6 +16,13 @@ class Exam extends Model
 
     ];
 
+    public function bankQuestions()
+{
+    return $this->belongsToMany(
+        Questions::class,
+        'exam_question'
+    )->withPivot('order')->withTimestamps();
+}
     public function userExams(){
         return $this->hasMany(UserExam::class);
     }
