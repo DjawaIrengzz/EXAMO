@@ -35,22 +35,6 @@ class DashboardController
                 abort(403);
         }
     }
-    public function detach(Exam $exam, $questionId): JsonResponse
-    {
-        // Ensure the relation exists
-        if (! $exam->bankQuestions()->where('question_id', $questionId)->exists()) {
-            return response()->json([
-                'message' => "Question with ID {$questionId} is not attached to this exam."
-            ], 404);
-        }
-
-        // Detach the question
-        $exam->bankQuestions()->detach($questionId);
-
-        return response()->json([
-            'message' => "Question {$questionId} detached from exam successfully."
-        ], 200);
-    }
     public function dashboardSiswa()
     {
         $exams = Exam::withCount('questions')

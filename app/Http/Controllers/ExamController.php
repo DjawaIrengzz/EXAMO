@@ -6,6 +6,7 @@ use App\Http\Requests\Exam\UpdateExamRequest;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\Exam;
+use Illuminate\Http\JsonResponse;
 class ExamController extends Controller
 {
     public function index(){
@@ -19,6 +20,23 @@ class ExamController extends Controller
         })-> latest()->paginate(10);
 
         return response()->json($available);
+    }
+    
+    public function detach(Exam $exam, $questionId): JsonResponse
+    {
+        // Ensure the relation exists
+        if (! $exam->bankQuestions()->where('question_id', $questionId)->exists()) {
+            return response()->json([
+                'message' => "Question with ID {$questionId} is not attached to this exam."
+            ], 404);
+        }
+
+        // Detach the question
+        $exam->bankQuestions()->detach($questionId);
+
+        return response()->json([
+            'message' => "Question {$questionId} detached from exam successfully."
+        ], 200);
     }
     
     //patch
