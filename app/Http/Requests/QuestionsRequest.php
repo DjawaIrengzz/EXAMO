@@ -22,7 +22,7 @@ class QuestionsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'exam_id' => 'required',
+
             'question' => 'required|string',
             'type' => 'in:multiple,essay,true_false',
             'options' => 'array',

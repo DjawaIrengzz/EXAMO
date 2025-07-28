@@ -10,7 +10,8 @@ use Symfony\Component\Console\Question\Question;
 use App\Services\BankSoalService;
 use App\Http\Requests\BankRequest;
 use Illuminate\Http\JsonResponse;
-
+use App\Models\Exam;
+use Illuminate\Support\Facades\DB;
 class QuestionController extends Controller
 {
     protected $questionService;
