@@ -9,12 +9,11 @@ deploy_to_ftp:
 
     # Upload semua file (kecuali folder .git, vendor, node_modules, dll)
     - |
+      PROJECT_DIR=project
+      cd $PROJECT_DIR
       find . -type f ! -path "./.git/*" ! -path "./vendor/*" ! -path "./node_modules/*" | while read file; do
         remote_path="domains/mijurnal.com/public_html/api-pos/${file#./}"
-        remote_dir=$(dirname "$remote_path")
         echo "Uploading $file to $remote_path"
-
-        # Create directory on remote (must be done manually in advance or via cURL FTP MKD if supported)
         curl -s --ftp-create-dirs -T "$file" "ftp://$FTP_USER:$FTP_PASS@$FTP_HOST/$remote_path"
       done
   only:
