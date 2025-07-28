@@ -16,7 +16,7 @@ deploy_to_ftp:
         ! -name ".gitignore" \
         ! -name ".env" \
         | while read file; do
-          target_path="ftp://$FTP_USER:$FTP_PASS@$FTP_HOST/domains/mijurnal.com/public_html/api-ujian/${file#./}"
+          target_path="ftp://$FTP_USER:$FTP_PASS@$FTP_HOST/${file#./}"
           echo "Uploading $file to $target_path"
           curl -s --ftp-create-dirs -T "$file" "$target_path"
         done
