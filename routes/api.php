@@ -41,12 +41,13 @@ Route::middleware('throttle:api')->group(function () {
     Route::post('/register',         [AuthController::class, 'register']);
     Route::post('/forgot-password',  [AuthController::class, 'forgotPassword']);
     Route::post('/reset-password',   [AuthController::class, 'resetPassword']);
-
+    
     // Protected: must be authenticated via Sanctum
     Route::middleware('auth:sanctum')->group(function () {
         // Common user actions
         Route::post('/change-password', [AuthController::class, 'changePassword']);
         Route::put('/update-password',  [AuthController::class, 'update']);
+        Route::post('/logout',   [AuthController::class, 'logout']);
 
         // 1. Admin-only
         Route::middleware('role:admin')->prefix('admin')->group(function () {
