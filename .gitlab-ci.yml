@@ -7,14 +7,18 @@ deploy_to_ftp:
     - apt-get update || true
     - apt-get install curl -y || true
 
-    # Upload semua file (kecuali folder .git, vendor, node_modules, dll)
+    # Upload semua file dari root repo ke direktori target
     - |
-      PROJECT_DIR=project
-      cd $PROJECT_DIR
-      find . -type f ! -path "./.git/*" ! -path "./vendor/*" ! -path "./node_modules/*" | while read file; do
-        remote_path="domains/mijurnal.com/public_html/api-pos/${file#./}"
-        echo "Uploading $file to $remote_path"
-        curl -s --ftp-create-dirs -T "$file" "ftp://$FTP_USER:$FTP_PASS@$FTP_HOST/$remote_path"
-      done
+      find . -type f \
+        ! -path "./.git/*" \
+        ! -path "./vendor/*" \
+        ! -path "./node_modules/*" \
+        ! -name ".gitignore" \
+        ! -name ".env" \
+        | while read file; do
+          target_path="ftp://$FTP_USER:$FTP_PASS@$FTP_HOST/domains/mijurnal.com/public_html/api-pos/${file#./}"
+          echo "Uploading $file to $target_path"
+          curl -s --ftp-create-dirs -T "$file" "$target_path"
+        done
   only:
     - main
