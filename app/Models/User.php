@@ -5,8 +5,8 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Sanctum\HasApiTokens;   
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -22,6 +22,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone_number',
+        'gender',
+        'role',
+        'avatar',
+        'is_active'
     ];
 
     /**
@@ -33,6 +38,24 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+
+    public function subscriptions()
+    {
+        return $this->hasOne(Subscription::class);
+    }
+    public function examsCreate(){
+        return $this->hasMany(Exam::class, 'created_by');
+    }
+    public function examstaken(){
+        return $this->belongsTo(Exam::class,'user_exams');
+    }
+    public function examResults(){
+        return $this->hasMany(ExamResult::class);
+    }
+    public function answer(){
+        return $this->hasMany(UserAnswer::class);
+    }
 
     /**
      * Get the attributes that should be cast.
