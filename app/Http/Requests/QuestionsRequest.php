@@ -45,10 +45,12 @@ class QuestionsRequest extends FormRequest
                 if(!$this->has('options') || !is_array($this->input('options')) || count($this->input('options')) < 2){
                     $validator->errors()->add('options','Options wajib diisi minimal 2 pilihan untuk multiple choice');
                 }
-                if($this->filled('correct_answer')){
-                    $validator->errors()->add('correct_answer', 'Correct answer tidak boleh diisi untuk multiple choice');
-                }
-            }
+                    if (!$this->filled('correct_answer')) {
+                            $validator->errors()->add('correct_answer', 'Correct answer wajib diisi untuk multiple choice');
+                        } elseif (!in_array($this->input('correct_answer'), $this->input('options', []))) {
+                            $validator->errors()->add('correct_answer', 'Correct answer harus salah satu dari pilihan (options)');
+                        }
+                    }
 
             if(in_array($type, ['essay','true_false'])){
                 if(!$this->filled('correct_answer')){
