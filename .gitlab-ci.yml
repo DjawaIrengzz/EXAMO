@@ -4,9 +4,20 @@ stages:
 deploy_via_ftp:
   stage: deploy
   script:
-    - lftp -c "
-        open -u $FTP_USER,$FTP_PASS ftp://$FTP_HOST;
-        mirror -R ./ domains/mijurnal.com/public_html/api-pos;
-      "
+    # Install FTP client jika runner-nya support (optional, skip kalau sudah ada ftp)
+    - apt-get update -y || true
+    - apt-get install ftp -y || true
+
+    # FTP upload semua file satu per satu (tanpa folder .git dan file CI)
+    - |
+      echo "open $FTP_HOST
+      user $FTP_USER $FTP_PASS
+      binary
+      lcd .
+      cd domains/mijurnal.com/public_html/api-pos
+      mput *.*
+      bye" > ftp_commands.txt
+
+    - ftp -inv < ftp_commands.txt
   only:
     - main
