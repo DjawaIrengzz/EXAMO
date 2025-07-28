@@ -1,23 +1,21 @@
 stages:
   - deploy
 
-deploy_via_ftp:
+deploy_to_ftp:
   stage: deploy
   script:
-    # Install FTP client jika runner-nya support (optional, skip kalau sudah ada ftp)
-    - apt-get update -y || true
-    - apt-get install ftp -y || true
+    - apt-get update || true
+    - apt-get install curl -y || true
 
-    # FTP upload semua file satu per satu (tanpa folder .git dan file CI)
+    # Upload semua file (kecuali folder .git, vendor, node_modules, dll)
     - |
-      echo "open $FTP_HOST
-      user $FTP_USER $FTP_PASS
-      binary
-      lcd .
-      cd domains/mijurnal.com/public_html/api-pos
-      mput *.*
-      bye" > ftp_commands.txt
+      find . -type f ! -path "./.git/*" ! -path "./vendor/*" ! -path "./node_modules/*" | while read file; do
+        remote_path="domains/mijurnal.com/public_html/api-pos/${file#./}"
+        remote_dir=$(dirname "$remote_path")
+        echo "Uploading $file to $remote_path"
 
-    - ftp -inv < ftp_commands.txt
+        # Create directory on remote (must be done manually in advance or via cURL FTP MKD if supported)
+        curl -s --ftp-create-dirs -T "$file" "ftp://$FTP_USER:$FTP_PASS@$FTP_HOST/$remote_path"
+      done
   only:
     - main
