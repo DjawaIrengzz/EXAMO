@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use Illuminate\Support\Facades\Storage;
+
 class AvatarHelper
 {
 
@@ -22,5 +24,17 @@ class AvatarHelper
         return $user->avatar
             ? asset('storage/' . $user->avatar)
             : self::generateDefaultAvatar($user->name, $type);
+    }
+
+    public static function deleteAvatarIfExists(?string $path): void
+    {
+        if ($path && Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
+    }
+
+    public static function storeAvatar($file): string
+    {
+        return $file->store('avatars', 'public');
     }
 }
