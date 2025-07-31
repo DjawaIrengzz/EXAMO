@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Helpers\AvatarHelper;
+use App\Helpers\BaseResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\UpdateAvatarRequest;
@@ -34,7 +35,7 @@ class GuruController
             ? Carbon::parse($token->last_used_at)->gt(now()->subDays(30))
             : false;
 
-        return response()->json([
+        return BaseResponse::OK([
             'informasi_umum' => [
                 'name' => $guru->name,
                 'email' => $guru->email,
@@ -52,7 +53,7 @@ class GuruController
                 'last_used' => $lastUsed ?? 'belum pernah digunakan',
                 'key' => $token,
             ]
-        ]);
+        ], 'Guru information retrieved successfully');
     }
 
     /**
@@ -62,27 +63,20 @@ class GuruController
     {
         $guru = auth()->user();
 
-        return response()
-            ->json([
-                'guru' => $guru
-            ], 200);
+        return BaseResponse::OK($guru, 'Guru found');
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateBiodataRequest $request, string $id)
+    public function update(UpdateBiodataRequest $request)
     {
         $guru = auth()->user();
         $validated = $request->validated();
 
         $guru->update($validated);
 
-        return response()
-            ->json([
-                'message' => 'Biodata updated successfully',
-                'guru' => $guru
-            ], 200);
+        return BaseResponse::OK($guru, 'Biodata updated successfully');
     }
 
     public function updateAvatar(UpdateAvatarRequest $request)
@@ -91,21 +85,20 @@ class GuruController
         $guru = auth()->user();
         $request->validated();
 
-        if ($request->hasFile('avatar')) {
-            if ($guru->avatar && Storage::disk('public')->exists($guru->avatar)) {
-                Storage::disk('public')->delete($guru->avatar);
-            }
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $guru->avatar = $path;
+        if($request->hasFile('avatar')){
+            AvatarHelper::deleteAvatarIfExists($guru->avatar);
+
+            $guru->avatar = AvatarHelper::storeAvatar($request->file('avatar'));
         }
+
+        $guru->avatar = AvatarHelper::storeAvatar($request->file('avatar'));
 
         $guru->save();
 
-        return response()
-            ->json([
-                'message' => 'Avatar updated successfully',
-                'guru' => $guru
-            ], 200);
+        return BaseResponse::OK([
+            'avatar_url' => AvatarHelper::getAvatarUrl($guru, 'siswa'),
+            'avatar_uploaded' => (bool) $guru->avatar
+        ], 'Avatar updated successfully');
     }
 
     public function destroyAvatar()
@@ -113,20 +106,14 @@ class GuruController
         $guru = auth()->user();
 
         if (!$guru->avatar) {
-            return response()->json([
-                "message" => "Avatar not found",
-            ], 404);
+            BaseResponse::BadRequest('No avatar to delete');
         }
 
-        if (Storage::disk('public')->exists($guru->avatar)) {
-            Storage::disk('public')->delete($guru->avatar);
-        }
+        AvatarHelper::deleteAvatarIfExists($guru->avatar);
 
         $guru->avatar = null;
         $guru->save();
 
-        return response()->json([
-            "message" => "Avatar deleted successfully",
-        ], 200);
+        return BaseResponse::OK(null, 'Avatar deleted successfully');
     }
 }

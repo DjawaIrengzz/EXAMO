@@ -22,17 +22,17 @@ class UpdateBiodataRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $this->user()->id,
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|max:255|unique:users,email,' . $this->user()->id,
             'phone_number' => [
+                'sometimes',
                 'required',
                 'string',
                 'min:10',
                 'max:15',
                 'regex:/^(\+62|62|0)8[1-9][0-9]{6,10}$/'
             ],
-            'gender' => 'nullable|string|in:laki-laki,perempuan',
-            'avatar' => 'nullable|image|max:2048'
+            'gender' => 'sometimes|required|string|in:male,female',
         ];
     }
 }

@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+
+use Carbon\Carbon;
 use App\Models\Exam;
 use App\Models\User;
-use App\Models\ExamResult;
 use App\Models\Questions;
-use Carbon\Carbon;
+use App\Models\ExamResult;
+use App\Models\Subscription;
 use Illuminate\Http\Request;
+use App\Helpers\BaseResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController
 {
@@ -52,10 +56,10 @@ class DashboardController
 
         $completed = ExamResult::where('user_id', auth()->id())->count();
 
-        return response()->json([
+        return BaseResponse::OK([
             'exam' => $exams,
             'completed' => $completed,
-        ]);
+        ], 'Dashboard Siswa retrieved successfully');
     }
 
     public function dashboardGuru()
@@ -73,27 +77,51 @@ class DashboardController
                 ];
             });
 
-        $jumlah_exam = Exam::where('created_by', auth()->id())->count();
-        $ujianIds = Exam::where('user_id', auth()->id())
-            ->pluck('exam_id');
+        $ujianIds = Exam::where('created_by', auth()->id());
+        $jumlah_exam = $ujianIds->count();
         $jumlah = ExamResult::whereIn('exam_id', $ujianIds)
             ->distinct('exam_id')
             ->count();
+        $subscription = Subscription::where('user_id', auth()->id());
 
-        // Belum menampilakn bank soal
+        $subcription_end = null;
+        if ($subscription->status === 'active') {
+            $subscription_end = Carbon::parse($subscription->end_date)->format('d F Y');
+        }
 
-        return response()->json([
+        return BaseResponse::OK([
             'jumlah_exam' => $jumlah_exam > 0 ? $jumlah_exam : 0,
             'total_siswa' => $jumlah > 0 ? $jumlah : 0,
+            'subscription_end' => $subcription_end,
             'exam' => $exams
-        ]);
+        ], 'Dashboard Guru retrieved successfully');
     }
 
     public function dashboardAdmin()
     {
-        return response()->json([
-            'message' => 'Dashboard Admin'
-        ]);
+        $siswa = User::where('role', 'siswa');
+        $guru = User::where('role', 'guru');
+        $subcripton = Subscription::whereIn('plan_type', ['premium', 'enterprise'])
+            ->where('status', 'active')
+            ->count();
+
+        $pengguna_active = User::where('status', true)
+            ->count();
+        $pengguna_inactive = User::where('status', false)
+            ->count();
+        $data = DB::table('subscriptions')
+            ->select('plan_type', DB::raw('count(*) as total'))
+            ->groupBy('plan_type')
+            ->get();
+
+        return BaseResponse::OK([
+            'jumlah_siswa' => $siswa->count(),
+            'jumlah_guru' => $guru->count(),
+            'jumlah_subscription' => $subcripton,
+            'pengguna_active' => $pengguna_active,
+            'pengguna_inactive' => $pengguna_inactive,
+            'subscription_data' => $data
+        ], 'Dashboard Admin retrieved successfully');
     }
 
     public function show(string $id)
@@ -120,23 +148,32 @@ class DashboardController
      */
     public function showExamSiswa(string $id)
     {
-        $exam = Exam::findOrFail($id);
+        $exam = Exam::find($id);
+
+        if (!$exam) {
+            return BaseResponse::NotFound('Exam not found');
+        }
+
         $started_at = Carbon::parse($exam->start_time);
         $end_at = Carbon::parse($exam->end_time);
 
-        return response()->json([
+        return BaseResponse::OK([
             'started_at' => Carbon::parse($exam->start_time)->format('H:i'),
             'created_at' => $exam->created_at->format('d F Y'),
             'waktu_ujian' => $started_at->diffInMinutes($end_at) . ' menit',
             'total_soal' => $exam->questions()->count(),
             'kkm_score' => $exam->kkm_score,
             'deskripsi' => $exam->description
-        ]);
+        ], 'Exam Siswa retrieved successfully');
     }
 
     public function showExamGuru(string $id)
     {
-        $exam = Exam::findOrFail($id);
+        $exam = Exam::find($id);
+
+        if (!$exam) {
+            return BaseResponse::NotFound('Exam not found');
+        }
 
         $started_at = Carbon::parse($exam->start_time);
         $end_at = Carbon::parse($exam->end_time);
@@ -164,7 +201,7 @@ class DashboardController
             ];
         });
 
-        return response()->json([
+        return BaseResponse::OK([
             'exam_info' => [
                 'started_at' => $started_at->format('H:i'),
                 'created_at' => $exam->created_at->format('d F Y'),
@@ -174,6 +211,6 @@ class DashboardController
                 'deskripsi' => $exam->description,
             ],
             'questions' => $formattedQuestions,
-        ]);
+        ], 'Exam Guru retrieved successfully');
     }
 }
