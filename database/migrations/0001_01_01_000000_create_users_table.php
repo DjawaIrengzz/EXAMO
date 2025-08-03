@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->integer('phone_number')->nullable(); // Added phone number field
+            $table->string('phone_number')->nullable(); // Added phone number field
             $table->timestamp('email_verified_at')->nullable();
             $table -> enum('gender',['male','female'])->nullable();
             $table -> enum('role',['admin', 'guru','user'])->default('user'); // Added role field

@@ -32,7 +32,7 @@ class DashboardController
             case 'guru':
                 return $this->dashboardGuru();
 
-            case 'siswa':
+            case 'user':
                 return $this->dashboardSiswa();
 
             default:

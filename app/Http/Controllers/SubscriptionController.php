@@ -6,10 +6,16 @@ use App\Http\Requests\StoreSubcriptionRequest;
 use App\Http\Requests\UpdateSubcriptionRequest;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-
+use App\Models\Plan;
 class SubscriptionController extends Controller
 {
+    public function plan()
+{
+    $plans = Plan::all(['type','duration_months','price']);
+    return response()->json($plans);
+}
     public function index(Request $request){
         if(Gate::denies('viewAny', Subscription::class)){
             return response()->json(['message' => 'forbidden']);
