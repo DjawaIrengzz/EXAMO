@@ -36,7 +36,7 @@ class ExamController extends Controller
         }
         $already = UserExam::where([
             ['exam_id',$exam->id],
-            ['user_id',$exam->id]
+            ['user_id',$user->id]
         ])->exists();
 
         if($already){
@@ -58,7 +58,7 @@ class ExamController extends Controller
 
         return response()->json([
             'message' => 'Berhasil bergabung ujian',
-            'exam' => $exam -> only(),
+            'exam' => $exam -> only(['id', 'titles', 'duration_minutes', 'start_time', 'end_time']),
             'user_exam' => $userExam,
             'questions' => $questions
         ], 201);
