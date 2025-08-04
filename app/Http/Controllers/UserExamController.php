@@ -6,6 +6,7 @@ use App\Http\Requests\StartUserExamRequest;
 use App\Models\Exam;
 use App\Models\UserExam;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class UserExamController extends Controller
@@ -22,7 +23,7 @@ class UserExamController extends Controller
         $userExam = UserExam::create([
             'user_id'=> $user->id,
             'exam_id' => $exam ->id,
-            'started_at' => Caarbon::now(),
+            'started_at' => Carbon::now(),
             'deadline' => $deadline,
             'status' => 'in_progress',
             'attempt_number' =>$attemptnumber,
