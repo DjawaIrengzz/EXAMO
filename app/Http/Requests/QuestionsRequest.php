@@ -62,14 +62,14 @@ class QuestionsRequest extends FormRequest
     public function messages()
     {
         return [
-            'question.required' => 'Pertanyaan wajib diisi',
-            'question.string' => 'Pertanyaan harus berupa string',
+            'question.required'       => 'Pertanyaan wajib diisi',
+            'question.string'         => 'Pertanyaan harus berupa string',
             
-            'type.in' => 'Tipe pertanyaan tidak valid',
+            'type.in'                 => 'Tipe pertanyaan tidak valid',
             'correct_answer.required' => 'Jawaban benar wajib diisi',
-            'image.image' => 'File harus berupa gambar',
-            'image.max' => 'Ukuran gambar maksimal 2MB',
-            'is_active.required' => 'Status aktif tidak boleh kosong',
+            'image.image'             => 'File harus berupa gambar',
+            'image.max'               => 'Ukuran gambar maksimal 2MB',
+            'is_active.required'      => 'Status aktif tidak boleh kosong',
         ];
     }
 }
