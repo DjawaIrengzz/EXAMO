@@ -33,7 +33,7 @@ class Exam extends Model
         return $this->belongsTo(Category::class);
     }
     public function questions(){
-        return $this->belongsToMany(Questions::class);
+        return $this->belongsToMany(Questions::class, 'exam_question','exam_id', 'question_id');
     }
     public function usersTaken(){
         return $this->belongsToMany(User::class);

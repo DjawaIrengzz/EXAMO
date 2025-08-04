@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('plans', function (Blueprint $table) {
+        Schema::create('expenses', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['basic', 'premium', 'enterprise'])->unique();
-            $table -> integer('duration_months');
-            $table -> decimal('price', 12, 2);
+            $table->string('name');
+            $table->decimal('amount', 12, 2);
+            $table->date('date'); //whereYear() berfungsi
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('plans');
+        Schema::dropIfExists('expenses');
     }
 };

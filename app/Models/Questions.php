@@ -34,7 +34,7 @@ class Questions extends Model
     )->withPivot('order')->withTimestamps();
 }
     public function exam(){
-        return $this->belongsToMany(Exam::class, 'exam_id');
+        return $this->belongsToMany(Exam::class, 'exam_id','exam_question', 'question_id', 'exam_id');
     }
 
 }

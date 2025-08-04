@@ -6,7 +6,10 @@ use App\Http\Requests\Exam\UpdateExamRequest;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\Exam;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use App\Models\UserExam;
 class ExamController extends Controller
 {
     public function index(){
@@ -20,6 +23,45 @@ class ExamController extends Controller
         })-> latest()->paginate(10);
 
         return response()->json($available);
+    }
+    public function examJoin(Request $request){
+        $user = $request -> user();
+        $token = $request -> input('token');
+        $exam = Exam::where('token', $token)->where('status', 'aktif')-> first();
+
+        if(Carbon::now()->lt($exam->start_time)||Carbon::now()->gt($exam->end_time)){
+            return response()->json([
+                'message' => 'Ujian belum dibuka'
+            ],403);
+        }
+        $already = UserExam::where([
+            ['exam_id',$exam->id],
+            ['user_id',$exam->id]
+        ])->exists();
+
+        if($already){
+            return response()->json([
+                'message' => 'Anda sudah tergabung diujian ini'
+            ],409);
+        }
+        $userExam = UserExam::create([
+            'user_id' => $user->id,
+            'exam_id' => $exam -> id,
+            'started_at' => Carbon::now(),
+            'deadline' => Carbon::now()-> addMinutes($exam->duration_minutes),
+            'status' => 'in_progress'
+        ]);
+
+        $questions = $exam -> questions() ->where('is_active', true)
+                           ->when($exam->shuffle_question,fn($q) => $q -> inRandomOrder())
+                           ->get();
+
+        return response()->json([
+            'message' => 'Berhasil bergabung ujian',
+            'exam' => $exam -> only(),
+            'user_exam' => $userExam,
+            'questions' => $questions
+        ], 201);
     }
     public function attachToExam(Request $request)
 {
@@ -38,7 +80,7 @@ class ExamController extends Controller
         ]);
     }
 
-    return response()->json(['message' => 'Questions attached to exam successfully']);
+    return response()->json(['message' => 'Pertanyaan telah berhasil dihubungkan']);
 }
 
 

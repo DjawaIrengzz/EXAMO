@@ -5,7 +5,9 @@ use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use App\Helpers\BaseResponse;
 
+use Illuminate\Support\Carbon;
 class AdminController
 {
     /**
@@ -13,10 +15,6 @@ class AdminController
      */
     public function index(Request $request)
     {
-        if (Gate::denies('viewAny', User::class)){
-            return response()->json(['message' => 'Forbidden'],403);
-
-        }
 
         $gurus = User::where('role', 'guru')
         ->select('id', 'name', 'email', 'is_active', 'created_at')
@@ -48,9 +46,7 @@ class AdminController
      */
     public function show($id)
     {
-        if(Gate::denies('view', User::class)){
-            return response()->json(['message'=> 'Forbidden'],403);
-        }
+
         $guru = User::where('role', 'guru')
         ->with('currentAccessToken')
         ->findOrFail($id);

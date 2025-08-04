@@ -104,15 +104,7 @@ class AuthController extends Controller
                 ]);
     }
 
-    public function update(UpdatePassword $request){
 
-        $user = $request->user();
-        $user->update($request->only('name', 'email'));
-        return response()->json([
-            'message' =>'Berhasil Update',
-            'data' => $user
-        ]);
-    }
 
     public function changePassword(ChangePassword $request){
 
