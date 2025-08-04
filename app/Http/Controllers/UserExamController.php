@@ -14,7 +14,7 @@ class UserExamController extends Controller
 {
     public function start(StartUserExamRequest $request, Exam $exam){
         $user = Auth::user();
-        if($exam ->status !== 'published' || ($exam->start_time && Carbon::now()->lt($exam->start_time)) || ($exam->end_time && Carbon::now()->gt($exam->end_time))){
+        if($exam ->status !== 'aktif' || ($exam->start_time && Carbon::now()->lt($exam->start_time)) || ($exam->end_time && Carbon::now()->gt($exam->end_time))){
             return response()->json(['message' => 'Ujian tidak tersedia'],403);
         }
         $last =UserExam::where('user_id', $user->id)->orderBy('attempt_number','desc')->first();
