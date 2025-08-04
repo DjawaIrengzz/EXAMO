@@ -29,9 +29,18 @@ class ExamController extends Controller
         $token = $request -> input('token');
         $exam = Exam::where('token', $token)->where('status', 'aktif')-> first();
 
-        if(Carbon::now()->lt($exam->start_time)||Carbon::now()->gt($exam->end_time)){
+        if(! $exam){
+            return response() ->json(['message' => 'Token salah atau ujian tidak aktif'],404);
+        }
+
+        $now = Carbon::now();
+
+        if($now->lt($exam->start_time)){
+            return response() -> json(['message' => 'Ujian belum dibuka'],403);
+        }
+        if($now->gt($exam->end_time)){
             return response()->json([
-                'message' => 'Ujian belum dibuka'
+                'message' => 'Ujian telah berakhir'
             ],403);
         }
         $already = UserExam::where([

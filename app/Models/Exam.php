@@ -7,6 +7,10 @@ use LDAP\Result;
 
 class Exam extends Model
 {
+    protected $casts= [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime'
+    ];
         public $incrementing = true;
     protected $fillable = [
     'titles', 'description', 'token', 'category_id', 'created_by',
