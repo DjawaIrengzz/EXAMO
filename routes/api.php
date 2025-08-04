@@ -44,6 +44,14 @@ Route::middleware('throttle:api')->group(function () {
     
     // Protected: must be authenticated via Sanctum
     Route::middleware('auth:sanctum')->group(function () {
+         // Dashboard umum (berdasarkan role: admin, guru, siswa)
+    Route::get('dashboard',          [DashboardController::class, 'index'])
+         ->name('dashboard.index');
+
+    // Detail satu exam pada dashboard (role-based)
+    Route::get('dashboard/{exam}',   [DashboardController::class, 'show'])
+         ->whereNumber('exam')
+         ->name('dashboard.show');
         // Common user actions
         Route::post('/change-password', [AuthController::class, 'changePassword']);
         Route::put('/update-password',  [AuthController::class, 'update']);
