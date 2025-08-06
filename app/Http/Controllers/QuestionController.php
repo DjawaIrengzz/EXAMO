@@ -35,7 +35,7 @@ class QuestionController extends Controller
                 $q->where('question', 'like', '%' . $search . '%')
                     ->orWhereHas('exam', function ($q2) use ($search) {
                         $q2->where('titles', 'like', '%' . $search . '%');
-                    }); 
+                    });
             });
         }
 
@@ -93,18 +93,68 @@ class QuestionController extends Controller
      */
     public function store(QuestionsRequest $request)
     {
-        $validated = $request->validated();
+        $isMultiple = $request->has('questions');
+        $questionsInput = $isMultiple ? $request->questions : [$request->all()];
+        $questionFiles = $request->file('questions') ?? [$request->file()];
 
+        $storedQuestions = [];
 
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')
-                ->store('questions', 'public');
+        foreach ($questionsInput as $index => $questionData) {
+            $question = new Questions();
+            $question->question = $questionData['question'];
+            $question->type = $questionData['type'];
+            $question->correct_answer = $questionData['correct_answer'] ?? null;
+            $question->explanation = $questionData['explanation'] ?? null;
+            $question->order = $questionData['order'] ?? null;
+            $question->is_active = $questionData['is_active'];
+
+            $optionData = [];
+            $optionsInput = $questionData['options'] ?? [];
+
+            foreach ($optionsInput as $key => $value) {
+                if ($value !== null && $value !== '') {
+                    $optionData[] = [
+                        'type' => 'text',
+                        'value' => $value
+                    ];
+                } else {
+                    $optionFile = $questionFiles[$index]['options'][$key] ?? null;
+
+                    if ($optionFile && $optionFile->isValid()) {
+                        $path = $optionFile->store('questions/options', 'public');
+                        $optionData[] = [
+                            'type' => 'image',
+                            'value' => $path
+                        ];
+                    }
+                }
+            }
+
+            $question->options = json_encode($optionData);
+
+            $uploadedImages = $questionFiles[$index]['image'] ?? [];
+            $imagePaths = [];
+
+            if (!is_array($uploadedImages)) {
+                $uploadedImages = [$uploadedImages];
+            }
+
+            foreach ($uploadedImages as $image) {
+                if ($image && $image->isValid()) {
+                    $path = $image->store('questions/images', 'public');
+                    $imagePaths[] = $path;
+                }
+            }
+
+            $question->image = json_encode($imagePaths);
+            $question->save();
+            $storedQuestions[] = $question;
         }
 
-
-        $question = Questions::create($validated);
-
-        return BaseResponse::Created($question, 'Question created successfully');
+        return BaseResponse::Created(
+            $isMultiple ? $storedQuestions : $storedQuestions[0],
+            'question berhasil dibuat'
+        );
     }
 
     /**
@@ -125,23 +175,50 @@ class QuestionController extends Controller
      * Update the specified resource in storage.
      */
     public function update(QuestionsRequest $request, string $id)
-    {
-        $question = Questions::find($id);
-
-        if (!$question) {
-            return BaseResponse::NotFound('Question not found');
-        }
-
-        $validated = $request->validated();
-
-        if (isset($validated['options'])) {
-            $validated['options'] = json_encode($validated['options']);
-        }
-
-        $question->update($validated);
-
-        return BaseResponse::OK($question, 'Question updated successfully');
+{
+    $question = Questions::find($id);
+    if (!$question) {
+        return BaseResponse::NotFound('Question not found');
     }
+
+    $validated = $request->validated();
+
+    // Handle file options & images jika ada
+    if ($request->hasFile('options')) {
+        $optionData = [];
+        foreach ($request->file('options') as $key => $file) {
+            if ($file && $file->isValid()) {
+                $path = $file->store('questions/options', 'public');
+                $optionData[] = ['type' => 'image', 'value' => $path];
+            }
+        }
+        $validated['options'] = json_encode($optionData);
+    } elseif (isset($validated['options']) && is_array($validated['options'])) {
+        $validated['options'] = json_encode(
+            collect($validated['options'])->map(fn($v) => ['type' => 'text', 'value' => $v]),
+            JSON_THROW_ON_ERROR
+        );
+    }
+
+    // Handle image upload jika ada
+    if ($request->hasFile('image')) {
+        $paths = [];
+        $images = is_array($request->file('image')) ? $request->file('image') : [$request->file('image')];
+
+        foreach ($images as $img) {
+            if ($img && $img->isValid()) {
+                $paths[] = $img->store('questions/images', 'public');
+            }
+        }
+
+        $validated['image'] = json_encode($paths, JSON_THROW_ON_ERROR);
+    }
+
+    $question->update($validated);
+
+    return BaseResponse::OK($question, 'Question updated successfully');
+}
+
 
     /**
      * Remove the specified resource from storage.

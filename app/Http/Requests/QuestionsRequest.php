@@ -21,55 +21,95 @@ class QuestionsRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        if ($this->has('questions')) {
+            return [
+                'questions' => 'required|array',
+                'questions.*.exam_id' => 'required|exists:exams,id',
+                'questions.*.question' => 'required|string',
+                'questions.*.type' => 'required|in:multiple,essay,true_false,image',
+                'questions.*.options' => 'nullable|array',
+                'questions.*.options.*' => 'string',
+                'questions.*.correct_answer' => 'required|string',
+                'questions.*.explanation' => 'nullable|string',
+                'questions.*.image' => 'nullable',
+                'questions.*.image.*' => 'string',
+                'questions.*.order' => 'nullable|integer',
+                'questions.*.is_active' => 'required|boolean',
+            ];
+        }
 
+        return [
             'question' => 'required|string',
-            'type' => 'in:multiple,essay,true_false',
-            'options' => 'array',
+            'type' => 'required|in:multiple,essay,true_false,image',
+            'options' => 'nullable|array',
             'options.*' => 'string',
-            'correct_answer' => 'required|string',
+            'correct_answer' => 'nullable|string',
             'explanation' => 'nullable|string',
-            'image' => 'nullable|image|max:2048',
-            'order' => 'nullable|string',
-            'is_active' => 'required|boolean'
+            'image' => 'nullable',
+            'image.*' => 'string',
+            'order' => 'nullable|integer',
+            'is_active' => 'required|boolean',
         ];
     }
 
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            $type = $this->input('type');
+            $inputs = $this->has('questions') ? $this->input('questions') : [$this->all()];
 
-            if ($type === 'multiple') {
-                if (!$this->has('options') || !is_array($this->input('options')) || count($this->input('options')) < 2) {
-                    $validator->errors()->add('options', 'Options wajib diisi minimal 2 pilihan untuk multiple choice');
-                }
-                if (!$this->filled('correct_answer')) {
-                    $validator->errors()->add('correct_answer', 'Correct answer wajib diisi untuk multiple choice');
-                } elseif (!in_array($this->input('correct_answer'), $this->input('options', []))) {
-                    $validator->errors()->add('correct_answer', 'Correct answer harus salah satu dari pilihan (options)');
-                }
-            }
+            foreach ($inputs as $index => $q) {
+                $type = $q['type'] ?? null;
+                $options = $q['options'] ?? [];
+                $correct = $q['correct_answer'] ?? null;
 
-            if (in_array($type, ['essay', 'true_false'])) {
-                if ($this->filled('options')) {
-                    $validator->errors()->add('options', 'Options tidak boleh diisi untuk essay atau true/false');
+                // Common: Validasi options harus string
+                if (is_array($options)) {
+                    foreach ($options as $optKey => $optVal) {
+                        if (!is_string($optVal) || trim($optVal) === '') {
+                            $validator->errors()->add("questions.$index.options.$optKey", 'Setiap opsi harus berupa string dan tidak boleh kosong.');
+                        }
+                    }
+                }
+
+                if ($type === 'multiple') {
+                    if (count($options) < 3) {
+                        $validator->errors()->add("questions.$index.options", 'Minimal 3 opsi untuk multiple choice.');
+                    }
+
+                    if (empty($correct)) {
+                        $validator->errors()->add("questions.$index.correct_answer", 'Correct answer wajib diisi untuk multiple choice.');
+                    } elseif (!array_key_exists($correct, $options)) {
+                        $validator->errors()->add("questions.$index.correct_answer", 'Correct answer harus cocok dengan key dari options.');
+                    }
+                }
+
+                if ($type === 'image') {
+                    if (count($options) < 3) {
+                        $validator->errors()->add("questions.$index.options", 'Minimal 3 opsi untuk soal gambar.');
+                    }
+
+                    if (empty($correct)) {
+                        $validator->errors()->add("questions.$index.correct_answer", 'Correct answer wajib diisi untuk soal gambar.');
+                    } elseif (!array_key_exists($correct, $options)) {
+                        $validator->errors()->add("questions.$index.correct_answer", 'Correct answer harus cocok dengan key dari options.');
+                    }
+                }
+
+                if (in_array($type, ['essay', 'true_false'])) {
+                    if (empty($correct)) {
+                        $validator->errors()->add("questions.$index.correct_answer", 'Correct answer wajib diisi untuk tipe ' . $type);
+                    }
+
+                    if (!empty($options)) {
+                        $validator->errors()->add("questions.$index.options", 'Options tidak boleh diisi untuk tipe ' . $type);
+                    }
+                }
+
+                // Validasi default jika type tidak dikenali
+                if (!in_array($type, ['multiple', 'essay', 'true_false', 'image'])) {
+                    $validator->errors()->add("questions.$index.type", 'Tipe soal tidak dikenali.');
                 }
             }
         });
-    }
-
-    public function messages()
-    {
-        return [
-            'question.required'       => 'Pertanyaan wajib diisi',
-            'question.string'         => 'Pertanyaan harus berupa string',
-            
-            'type.in'                 => 'Tipe pertanyaan tidak valid',
-            'correct_answer.required' => 'Jawaban benar wajib diisi',
-            'image.image'             => 'File harus berupa gambar',
-            'image.max'               => 'Ukuran gambar maksimal 2MB',
-            'is_active.required'      => 'Status aktif tidak boleh kosong',
-        ];
     }
 }
