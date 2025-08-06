@@ -94,6 +94,8 @@ Route::middleware('throttle:api')->group(function () {
             // Exams & Questions
             Route::apiResource('exams',            ExamController::class);
             Route::apiResource('exams.questions',  QuestionController::class);
+            Route::apiResource('question',  QuestionController::class);
+
             // My subscriptions
             Route::get('subscriptions',             [SubscriptionController::class,'subscriptions']);
             Route::get('plans',             [SubscriptionController::class,'plan']);
