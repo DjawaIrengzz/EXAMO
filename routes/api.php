@@ -41,17 +41,9 @@ Route::middleware('throttle:api')->group(function () {
     Route::post('/register',         [AuthController::class, 'register']);
     Route::post('/forgot-password',  [AuthController::class, 'forgotPassword']);
     Route::post('/reset-password',   [AuthController::class, 'resetPassword']);
-    
+
     // Protected: must be authenticated via Sanctum
     Route::middleware('auth:sanctum')->group(function () {
-         // Dashboard umum (berdasarkan role: admin, guru, siswa)
-    Route::get('dashboard',          [DashboardController::class, 'index'])
-         ->name('dashboard.index');
-
-    // Detail satu exam pada dashboard (role-based)
-    Route::get('dashboard/{exam}',   [DashboardController::class, 'show'])
-         ->whereNumber('exam')
-         ->name('dashboard.show');
         // Common user actions
         Route::post('/change-password', [AuthController::class, 'changePassword']);
         Route::put('/update-password',  [AuthController::class, 'update']);
@@ -59,6 +51,8 @@ Route::middleware('throttle:api')->group(function () {
 
         // 1. Admin-only
         Route::middleware('role:admin')->prefix('admin')->group(function () {
+            // Dashboard
+            Route::get('dashboard', [DashboardController::class,'dashboardAdmin']);
             // Guru management
             Route::get('gurus',        [AdminController::class, 'index']);
             Route::get('gurus/{id}',   [AdminController::class, 'show']);
@@ -67,57 +61,57 @@ Route::middleware('throttle:api')->group(function () {
             // Finance overview
             Route::get('finance',      [AdminController::class, 'keuangan']);
             // Subscriptions
-            Route::get('subscriptions',                   [SubscriptionController::class,'index']);
-            Route::put('subscriptions/{subscription}',    [SubscriptionController::class,'update']);
-            Route::get('subscriptions/{subscription}',    [SubscriptionController::class,'show']);
+            Route::get('subscriptions',                   [SubscriptionController::class, 'index']);
+            Route::put('subscriptions/{subscription}',    [SubscriptionController::class, 'update']);
+            Route::get('subscriptions/{subscription}',    [SubscriptionController::class, 'show']);
             // System settings
             Route::get('settings',     [SystemSettingController::class, 'index']);
             Route::put('settings',     [SystemSettingController::class, 'update']);
-            // Dashboard
-            Route::get('dashboard',    [DashboardController::class, 'index']);
             // Audit logs
             Route::get('audit-logs',   [DashboardController::class, 'auditLogs']);
         });
 
         // 2. Guru-only
         Route::middleware('role:guru')->prefix('guru')->group(function () {
+            // Dashboard
+            Route::get('dashboard',[DashboardController::class,'dashboardGuru']);
             // Bank soal
             Route::get('bank-soal',                 [QuestionController::class, 'bank']);
-            Route::post   ('questions/attach', [QuestionController::class,'attachToExam']);
-            Route::delete ('questions/{question}', [QuestionController::class,'detach']);
+            Route::post('questions/attach', [QuestionController::class, 'attachToExam']);
+            Route::delete('questions/{question}', [QuestionController::class, 'detach']);
 
             // Profile
             Route::get('profile',                   [GuruController::class, 'index']);
             Route::get('profile/{id}',              [GuruController::class, 'show']);
             Route::put('profile',                   [GuruController::class, 'update']);
             Route::post('profile/avatar',           [GuruController::class, 'updateAvatar']);
+            Route::delete('profile/avatar',         [GuruController::class, 'destroyAvatar']);
             // Exams & Questions
             Route::apiResource('exams',            ExamController::class);
-            Route::apiResource('exams.questions',  QuestionController::class);
-            Route::apiResource('question',  QuestionController::class);
-
+            Route::apiResource('question',         QuestionController::class);
             // My subscriptions
-            Route::get('subscriptions',             [SubscriptionController::class,'subscriptions']);
-            Route::get('plans',             [SubscriptionController::class,'plan']);
-            Route::post('subscriptions',            [SubscriptionController::class,'store']);
+            Route::get('subscriptions',             [SubscriptionController::class, 'subscriptions']);
+            Route::post('subscriptions',            [SubscriptionController::class, 'store']);
             // Categories
             Route::apiResource('categories',       CategoryController::class)
-                 ->shallow();
+                ->shallow();
         });
 
         // 3. User-only (siswa)
         Route::middleware('role:user')->prefix('user')->group(function () {
+            // Dashboard
+            Route::get('dashboard',[DashboardController::class,'dashboardSiswa']);
             // Profile
             Route::get('profile',                  [SiswaController::class, 'index']);
             Route::get('profile/{id}',             [SiswaController::class, 'show']);
             Route::put('profile',                  [SiswaController::class, 'update']);
             Route::post('profile/avatar',          [SiswaController::class, 'updateAvatar']);
+            Route::delete('profile/avatar',        [SiswaController::class,'destroyAvatar']);
             // Categories
             Route::get('categories',               [CategoryController::class, 'indexActive']);
-            Route::get('categories/{category:slug}', [CategoryController::class, 'showBySlug']);
+            Route::get('categories/{category:slug}',[CategoryController::class, 'showBySlug']);
             Route::get('categories/{categories}',  [CategoryController::class, 'show']);
             // Exams
-            Route::post('exam/join',[ExamController::class, 'examJoin']);
             Route::get('exams',                    [ExamController::class, 'available']);
             Route::get('exam/{exam}',              [ExamController::class, 'show']);
             Route::get('exam',                     [ExamController::class, 'index']);
