@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ExamResultController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\UserExamController;
 use App\Http\Controllers\UserAnswerController;
@@ -77,7 +78,12 @@ Route::middleware('throttle:api')->group(function () {
             Route::get('bank-soal',                 [QuestionController::class, 'bank']);
             Route::post   ('questions/attach', [QuestionController::class,'attachToExam']);
             Route::delete ('questions/{question}', [QuestionController::class,'detach']);
-
+            //ExamResult
+            Route::get('exam-results', [ExamResultController::class, 'index']);
+            Route::get('exam-results/{id}', [ExamResultController::class, 'show']);
+            Route::post('exam-results', [ExamResultController::class, 'store']);
+            Route::put('exam-results/{id}', [ExamResultController::class, 'update']);
+            Route::delete('exam-results/{id}', [ExamResultController::class, 'destroy']);
             // Profile
             Route::get('profile',                   [GuruController::class, 'index']);
             Route::get('profile/{id}',              [GuruController::class, 'show']);
@@ -106,6 +112,9 @@ Route::middleware('throttle:api')->group(function () {
             Route::get('categories',               [CategoryController::class, 'indexActive']);
             Route::get('categories/{category:slug}', [CategoryController::class, 'showBySlug']);
             Route::get('categories/{categories}',  [CategoryController::class, 'show']);
+            // Exam Result
+            Route::get('exam-results', [ExamResultController::class, 'index']);
+            Route::get('exam-results/{id}', [ExamResultController::class, 'show']);
             // Exams
             Route::post('exam/join',[ExamController::class, 'examJoin']);
             Route::get('exams',                    [ExamController::class, 'available']);
