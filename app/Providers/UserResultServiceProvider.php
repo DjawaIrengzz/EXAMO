@@ -8,7 +8,7 @@ use App\Services\Interfaces\ExamResultServiceInterface;
 use ExamResultRepository;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class UserResultServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
