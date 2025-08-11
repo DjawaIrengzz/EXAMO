@@ -129,6 +129,7 @@ Route::middleware('throttle:api')->group(function () {
             Route::get('categories/{category:slug}',[CategoryController::class, 'showBySlug']);
             Route::get('categories/{categories}',  [CategoryController::class, 'show']);
             // Exams
+            Route::post('/user/exam/join', [ExamController::class, 'examJoin']);
             Route::get('exams',                    [ExamController::class, 'available']);
             Route::get('exam/{exam}',              [ExamController::class, 'show']);
             Route::get('exam',                     [ExamController::class, 'index']);
