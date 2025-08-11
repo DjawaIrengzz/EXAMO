@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->foreignId('bank_soal_id')->constrained('bank_soals')->onDelete('cascade');
             $table->text('question');
-            $table->enum('type', ['multiple', 'essay', 'true_false'])->default('multiple');
+            $table->enum('type', ['multiple', 'essay', 'true_false', 'image'])->default('multiple');
             $table->json('options')->nullable(); // For multiple choice options
             $table->string('correct_answer')->nullable(); // For essay or true/false questions
             $table->text('explanation')->nullable(); // Optional explanation for the answer

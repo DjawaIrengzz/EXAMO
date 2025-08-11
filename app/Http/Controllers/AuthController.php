@@ -8,12 +8,14 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\UpdatePassword;
 use App\Http\Requests\Auth\ResetPasswordReq;
+use App\Models\TeacherCredential;
 use Dotenv\Exception\ValidationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 class AuthController extends Controller
 {
@@ -49,6 +51,17 @@ class AuthController extends Controller
             'password'=> Hash::make($validate['password']),
             'role' => $validate['role'],
         ]);
+
+        if ($user->role === 'guru') {
+        TeacherCredential::create([
+            'user_id' => $user->id,
+            'teacher_key' => Str::random(16),
+            'teacher_id' => 'TCH-' . strtoupper(Str::random(6)),
+        ]);
+
+
+        }
+
 
         $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json([

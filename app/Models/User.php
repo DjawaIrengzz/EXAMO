@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -55,6 +56,10 @@ class User extends Authenticatable
     }
     public function answer(){
         return $this->hasMany(UserAnswer::class);
+    }
+    public function credential()
+    {
+        return $this->hasOne(TeacherCredential::class);
     }
 
     /**

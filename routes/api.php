@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiswaController;
+use App\Http\Controllers\TeacherCredentialController;
 use App\Http\Controllers\UserExamController;
 use App\Http\Controllers\UserAnswerController;
 use App\Http\Controllers\BarangController;
@@ -73,6 +75,13 @@ Route::middleware('throttle:api')->group(function () {
 
         // 2. Guru-only
         Route::middleware('role:guru')->prefix('guru')->group(function () {
+
+            // Profile
+            Route::get('profile',                  [ProfileController::class, 'index']);
+            Route::get('profile/{id}',             [ProfileController::class, 'show']);
+            Route::put('profile',                  [ProfileController::class, 'updateBiodata']);
+            Route::post('profile/avatar',          [ProfileController::class, 'updateAvatar']);
+            Route::delete('profile/avatar',        [ProfileController::class,'destroyAvatar']);
             // Dashboard
             Route::get('dashboard',[DashboardController::class,'dashboardGuru']);
             // Bank soal
@@ -95,10 +104,18 @@ Route::middleware('throttle:api')->group(function () {
             // Categories
             Route::apiResource('categories',       CategoryController::class)
                 ->shallow();
+            Route::get('/api-key', [TeacherCredentialController::class,'showApiKey']);
         });
 
         // 3. User-only (siswa)
         Route::middleware('role:user')->prefix('user')->group(function () {
+
+            // Profile
+            Route::get('profile',                  [ProfileController::class, 'index']);
+            Route::get('profile/{id}',             [ProfileController::class, 'show']);
+            Route::put('profile',                  [ProfileController::class, 'updateBiodata']);
+            Route::post('profile/avatar',          [ProfileController::class, 'updateAvatar']);
+            Route::delete('profile/avatar',        [ProfileController::class,'destroyAvatar']);
             // Dashboard
             Route::get('dashboard',[DashboardController::class,'dashboardSiswa']);
             // Profile

@@ -3,6 +3,12 @@
 namespace App\Helpers;
 class BaseResponse
 {
+    /**
+     * Summary of OK
+     * @param mixed $data
+     * @param string $message
+     * @return \Illuminate\Http\JsonResponse
+     */
     public static function OK($data = null, string $message){
         return response()->json([
             'success' => true,
@@ -11,7 +17,12 @@ class BaseResponse
             'data' => $data,
         ], 200);
     }
-
+    /**
+     * Summary of Created
+     * @param mixed $data
+     * @param string $message
+     * @return \Illuminate\Http\JsonResponse
+     */
     public static function Created($data = null, string $message = 'Created'){
         return response()->json([
             'success' => true,
@@ -20,11 +31,18 @@ class BaseResponse
             'message' => $message,
         ], 201);
     }
-
+    /**
+     * Summary of NoContent
+     * @return \Illuminate\Http\Response
+     */
     public static function NoContent(){
-        return response()->json(null, 204);
+        return response()->noContent(204);
     }
-
+    /**
+     * Summary of BadRequest
+     * @param string $message
+     * @return \Illuminate\Http\JsonResponse
+     */
     public static function BadRequest(string $message = 'Bad Request'){
         return response()->json([
             'success' => false,
@@ -32,7 +50,11 @@ class BaseResponse
             'message' => $message,
         ], 400);
     }
-
+    /**
+     * Summary of Unauthorized
+     * @param string $message
+     * @return \Illuminate\Http\JsonResponse
+     */
     public static function Unauthorized(string $message = 'Unauthorized'){
         return response()->json([
             'success' => false,
@@ -40,7 +62,11 @@ class BaseResponse
             'message' => $message,
         ], 401);
     }
-
+    /**
+     * Summary of Forbidden
+     * @param string $message
+     * @return \Illuminate\Http\JsonResponse
+     */
     public static function Forbidden(string $message = 'Forbidden'){
         return response()->json([
             'success' => false,
@@ -48,7 +74,11 @@ class BaseResponse
             'message' => $message,
         ], 403);
     }
-
+    /**
+     * Summary of NotFound
+     * @param string $message
+     * @return \Illuminate\Http\JsonResponse
+     */
     public static function NotFound(string $message = 'Not Found'){
         return response()->json([
             'success' => false,
@@ -56,7 +86,11 @@ class BaseResponse
             'message' => $message,
         ], 404);
     }
-
+    /**
+     * Summary of UnProcessable
+     * @param string $message
+     * @return \Illuminate\Http\JsonResponse
+     */
     public static function UnProcessable(string $message = 'Unprocessable Entity'){
         return response()->json([
             'success' => false,
@@ -64,7 +98,11 @@ class BaseResponse
             'message' => $message,
         ], 422);
     }
-
+    /**
+     * Summary of ServerError
+     * @param string $message
+     * @return \Illuminate\Http\JsonResponse
+     */
     public static function ServerError(string $message = 'Internal Server Error'){
         return response()->json([
             'success' => false,
