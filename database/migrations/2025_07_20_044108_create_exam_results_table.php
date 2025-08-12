@@ -12,27 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('exam_results', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->datetime('completed_at');
-            $table->timestamps();
-            $table->uuid('user_exam_id');
-            $table->foreign('user_exam_id')->references('id')->on('user_exams')->onDelete('cascade')->onUpdate('None');
-            $table->uuid('exam_id');
-            $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade')->onUpdate('None');
-            $table->uuid('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('None');
-            $table->uuid('teacher_id');
-            $table->foreign('teacher_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('None');
-            $table->integer('total_question');
-            $table->integer('correct_answer');
-            $table->integer('wrong_answer');
-            $table->integer('unanswered');
-            $table->decimal('score', 5, 2);
-            $table->decimal('percentage',5,2);
-            $table->boolean('is_passed')->default(false); // Indicates if the user passed the exam
-            $table->json('detailed_answer');
-            $table->integer('time_spent_minutes')->nullable(); // Time spent on the exam in minutes
-            $table->text('feedback')->nullable();
+            $table->string('ai_model_version')->nullable();
+    $table->decimal('ai_essay_score', 5, 2)->nullable();   // 0.00 - 100.00
+    $table->decimal('ai_confidence', 5, 4)->nullable();    // 0.0000 - 1.0000
+    $table->text('ai_explanation')->nullable();
+    $table->text('ai_prompt')->nullable();                 // consider hashing if sensitive
+    $table->json('ai_metadata')->nullable();
+    $table->decimal('human_score', 5, 2)->nullable();
+    $table->boolean('human_override')->default(false);
+    $table->text('human_feedback')->nullable();
+    $table->decimal('ai_contribution_pct', 5, 2)->nullable();
+    // Indexes:
+    $table->index('user_id');
+    $table->index('exam_id');
+    $table->index('teacher_id');
+    $table->index('ai_model_version');
 
 
         });
