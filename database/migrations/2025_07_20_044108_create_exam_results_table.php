@@ -12,13 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('exam_results', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->datetime('completed_at');
             $table->timestamps();
-            $table->foreignId('user_exam_id')->constrained()->onDelete('cascade');
-            $table->foreignId('exam_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
+            $table->uuid('user_exam_id');
+            $table->foreign('user_exam_id')->references('id')->on('user_exams')->onDelete('cascade')->onUpdate('None');
+            $table->uuid('exam_id');
+            $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade')->onUpdate('None');
+            $table->uuid('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('None');
+            $table->uuid('teacher_id');
+            $table->foreign('teacher_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('None');
             $table->integer('total_question');
             $table->integer('correct_answer');
             $table->integer('wrong_answer');
