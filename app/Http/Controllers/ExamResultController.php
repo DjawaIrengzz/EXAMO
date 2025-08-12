@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ExamResultExporter;
 use App\Http\Requests\StoreExamResultRequest;
 use App\Models\ExamResult;
+use App\Services\ExamResultExportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\JsonResponse;
 
 class ExamResultController extends Controller
 {
+    private $exportService;
+    public function __contruct(ExamResultExportService $exportService){
+        $this->exportService = $exportService;
+    }
     public function index(Request $req){
        $results = $this -> svc -> getAllResults($req->all());
        return response() -> json($results);

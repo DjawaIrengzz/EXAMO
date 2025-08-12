@@ -11,6 +11,12 @@ public function getAll(array $filters = []): LengthAwarePaginator
                     ->latest()
                     ->paginate($filters['per_page'] ?? 10);
     }
+    public function getByExamId($examId)
+    {
+        return ExamResult::with(['user', 'exam'])
+        ->where('exam_id', $examId)
+        ->get();
+    }
 
     public function getByUser(int $userId, array $filters = []): LengthAwarePaginator
     {
