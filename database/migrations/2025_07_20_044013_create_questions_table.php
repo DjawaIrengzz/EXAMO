@@ -12,10 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('questions', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->timestamps();
+            $table->uuid('bank_soal_id');
+            $table->foreign('bank_soal_id')->references('id')->on('bank_soals')->onDelete('cascade')->onUpdate('None');
             $table->text('question');
-            $table->enum('type', ['multiple', 'essay', 'true_false'])->default('multiple');
+            $table->enum('type', ['multiple', 'essay', 'true_false', 'image'])->default('multiple');
             $table->json('options')->nullable(); // For multiple choice options
             $table->string('correct_answer')->nullable(); // For essay or true/false questions
             $table->text('explanation')->nullable(); // Optional explanation for the answer
