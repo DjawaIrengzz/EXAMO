@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\BaseResponse;
+use App\Helpers\ResponseHelper;
+
 use App\Http\Requests\Exam\ExamRequest;
 use App\Http\Requests\Exam\UpdateExamRequest;
 use App\Services\Interfaces\ExamServiceInterface;
@@ -22,13 +23,13 @@ class ExamController extends Controller
             $data = $this->examService->list();
 
             if ($data instanceof LengthAwarePaginator) {
-                return BaseResponse::success($data, 'Daftar ujian berhasil diambil', 200, true);
+                return ResponseHelper::success($data, 'Daftar ujian berhasil diambil', 200, true);
             }
 
-            return BaseResponse::success($data, 'Daftar ujian berhasil diambil', 200);
+            return ResponseHelper::success($data, 'Daftar ujian berhasil diambil', 200);
         } catch (\Throwable $th) {
             Log::error($th);
-            return BaseResponse::error('Gagal mengambil daftar ujian', 500);
+            return ResponseHelper::error('Gagal mengambil daftar ujian', 500);
         }
     }
 
@@ -36,10 +37,10 @@ class ExamController extends Controller
     {
         try {
             $exam = $this->examService->create($request->validated());
-            return BaseResponse::success($exam, 'Ujian berhasil dibuat', 201);
+            return ResponseHelper::success($exam, 'Ujian berhasil dibuat', 201);
         } catch (\Throwable $th) {
             Log::error($th);
-            return BaseResponse::error('Gagal membuat ujian', 500);
+            return ResponseHelper::error('Gagal membuat ujian', 500);
         }
     }
 
@@ -49,13 +50,13 @@ class ExamController extends Controller
             $exam = $this->examService->find($id);
 
             if (!$exam) {
-                return BaseResponse::error('Ujian tidak ditemukan', 404);
+                return ResponseHelper::error('Ujian tidak ditemukan', 404);
             }
 
-            return BaseResponse::success($exam, 'Detail ujian berhasil diambil', 200);
+            return ResponseHelper::success($exam, 'Detail ujian berhasil diambil', 200);
         } catch (\Throwable $th) {
             Log::error($th);
-            return BaseResponse::error('Gagal mengambil detail ujian', 500);
+            return ResponseHelper::error('Gagal mengambil detail ujian', 500);
         }
     }
 
@@ -63,10 +64,10 @@ class ExamController extends Controller
     {
         try {
             $exam = $this->examService->update($id, $request->validated());
-            return BaseResponse::success($exam, 'Ujian berhasil diupdate', 200);
+            return ResponseHelper::success($exam, 'Ujian berhasil diupdate', 200);
         } catch (\Throwable $th) {
             Log::error($th);
-            return BaseResponse::error('Gagal mengupdate ujian', 500);
+            return ResponseHelper::error('Gagal mengupdate ujian', 500);
         }
     }
 
@@ -74,10 +75,10 @@ class ExamController extends Controller
     {
         try {
             $this->examService->delete($id);
-            return BaseResponse::success(null, 'Ujian berhasil dihapus', 200);
+            return ResponseHelper::success(null, 'Ujian berhasil dihapus', 200);
         } catch (\Throwable $th) {
             Log::error($th);
-            return BaseResponse::error('Gagal menghapus ujian', 500);
+            return ResponseHelper::error('Gagal menghapus ujian', 500);
         }
     }
 }

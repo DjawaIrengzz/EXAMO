@@ -7,7 +7,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Symfony\Component\HttpFoundation\Response;
 
-class BaseResponse
+class ResponseHelper
 {
     protected static function baseMeta(int $code = Response::HTTP_OK, string $status = 'success', ?string $message = null): array
     {
