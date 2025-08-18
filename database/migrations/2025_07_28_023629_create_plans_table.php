@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('plans', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->enum('type', ['basic', 'premium', 'enterprise'])->unique();
             $table -> integer('duration_months');
             $table -> decimal('price', 12, 2);
