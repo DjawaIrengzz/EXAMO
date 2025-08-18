@@ -9,16 +9,7 @@ use LDAP\Result;
 use Illuminate\Support\Str;
 class Exam extends Model
 {
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->{$model->getKeyName()})) {
-                $model->{$model->getKeyName()} = (string) Str::uuid();
-            }
-        });
-    }
+    
     
         public $incrementing = true;
     protected $fillable = [

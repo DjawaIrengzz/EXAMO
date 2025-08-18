@@ -22,15 +22,7 @@ class FinishUserExamRequest extends FormRequest
     public function rules(): array
     {
         return [
-<<<<<<< HEAD
-            'score'                     => 'required|integer|min:0',
-            'correct_answer'            => 'required|integer|min:0',
-            'wrong_answer'              => 'required|integer|min:0',
-            'unanswered'                => 'required|integer|min:0',
-            'answers'                   => 'required|array',
-            'answers.*.question_id'     => 'required|exists:questions,id',
-            'answers.*.answer'          => 'nullable|string',
-=======
+
             'score' => 'required|integer|min:0',
             'correct_answer' => 'required|integer|min:0',
             'wrong_answer' => 'required|integer|min:0',
@@ -38,7 +30,7 @@ class FinishUserExamRequest extends FormRequest
             'answers' => 'required|array',
             'answers.*.question_id' => 'required|exists:questions,id',
             'answers.*.answer'      => 'nullable|string',
->>>>>>> refactor/ExamResult-solid
+
             'answers.*.selected_option' => 'nullable|string',
         ];
     }
