@@ -1,0 +1,24 @@
+stages:
+  - deploy
+
+deploy_to_ftp:
+  stage: deploy
+  script:
+    - apt-get update || true
+    - apt-get install curl -y || true
+
+    # Upload semua file dari root repo ke direktori target
+    - |
+      find . -type f \
+        ! -path "./.git/*" \
+        ! -path "./vendor/*" \
+        ! -path "./node_modules/*" \
+        ! -name ".gitignore" \
+        ! -name ".env" \
+        | while read file; do
+          target_path="ftp://$FTP_USER:$FTP_PASS@$FTP_HOST/${file#./}"
+          echo "Uploading $file to $target_path"
+          curl -s --ftp-create-dirs -T "$file" "$target_path"
+        done
+  only:
+    - main
