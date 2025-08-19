@@ -6,6 +6,8 @@ use App\Helpers\ResponseHelper;
 
 use App\Http\Requests\Exam\ExamRequest;
 use App\Http\Requests\Exam\UpdateExamRequest;
+use App\Services\ExamService;
+
 use App\Services\Interfaces\ExamServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -15,12 +17,14 @@ class ExamController extends Controller
 {
     public function __construct(
         protected ExamServiceInterface $examService
-    ) {}
+    ) {
+        $this->service = $examService;
+    }
 
     public function index(): JsonResponse
     {
         try {
-            $data = $this->examService->list();
+            $data = $this->examService->getAllExams();
 
             if ($data instanceof LengthAwarePaginator) {
                 return ResponseHelper::success($data, 'Daftar ujian berhasil diambil', 200, true);
@@ -36,18 +40,17 @@ class ExamController extends Controller
     public function store(ExamRequest $request): JsonResponse
     {
         try {
-            $exam = $this->examService->create($request->validated());
+            $exam = $this->examService->createExam($request->validated());
             return ResponseHelper::success($exam, 'Ujian berhasil dibuat', 201);
-        } catch (\Throwable $th) {
-            Log::error($th);
-            return ResponseHelper::error('Gagal membuat ujian', 500);
-        }
+        } catch (\Throwable $e) {
+    return ResponseHelper::error($e->getMessage(), 500); // sementara biar tau error asli
+}
     }
 
     public function show($id): JsonResponse
     {
         try {
-            $exam = $this->examService->find($id);
+            $exam = $this->examService->getExamById($id);
 
             if (!$exam) {
                 return ResponseHelper::error('Ujian tidak ditemukan', 404);
@@ -63,7 +66,7 @@ class ExamController extends Controller
     public function update(UpdateExamRequest $request, $id): JsonResponse
     {
         try {
-            $exam = $this->examService->update($id, $request->validated());
+            $exam = $this->examService->updateExam($id, $request->validated());
             return ResponseHelper::success($exam, 'Ujian berhasil diupdate', 200);
         } catch (\Throwable $th) {
             Log::error($th);

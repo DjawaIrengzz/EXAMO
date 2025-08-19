@@ -6,12 +6,12 @@ use App\Repositories\Interfaces\ExamRepositoryInterface;
 
 class ExamRepository implements ExamRepositoryInterface
 {
-    public function all()
+    public function getAll()
     {
         return Exam::all();
     }
 
-    public function find($id)
+    public function findById($id)
     {
         return Exam::findOrFail($id);
     }
