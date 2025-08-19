@@ -13,6 +13,16 @@ class ExamRequest extends FormRequest
     {
         return true;
     }
+    public function prepareForValidation():void{
+        if($this->has('shuffle_question')){
+            $this->merge(['shuffle_question' => (bool) $this->input('shuffle_questions')]);
+        }
+        if($this->has('shuffle_options')){
+            $this->merge(['shuffle_options'=>(bool) $this->input('shuffle_options')]);
+        }
+        $this->request->remove('token');
+        $this->request->remove('created_by');
+    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -29,16 +39,16 @@ class ExamRequest extends FormRequest
             'end_time' => 'required|date|after:start_time',
             'duration_minutes' => 'required|integer|min:1',
             'total_questions' => 'required|integer|min:0',
-            'kkm_score' => 'required|integer|max:100',
-            'max_attempts' => 'integer|min:1',
-            'status' => 'in:draft,aktif,nonaktif,berlangsung,selesai',
-            'show_result' => 'boolean',
-            'shuffle_question' => 'boolean',
-            'shuffle_option' => 'boolean',
+            'kkm_score' => 'required|integer|min:0|max:100',
+            'max_attempts' => 'nullable|integer|min:1',
+            'status' => 'nullable|in:draft,aktif,nonaktif,berlangsung,selesai',
+            'show_result' => 'nullable|boolean',
+            'shuffle_question' => 'nullable|boolean',
+            'shuffle_option' => 'nullable|boolean',
             'instructions' => 'nullable|string',
         ];
     }
-    public function message():array
+    public function messages():array
     {
             return [
         'titles.required' => 'Judul ujian wajib diisi.',
@@ -67,6 +77,7 @@ class ExamRequest extends FormRequest
         'kkm_score.required' => 'Nilai KKM wajib diisi.',
         'kkm_score.integer' => 'Nilai KKM harus berupa angka.',
         'kkm_score.max' => 'Nilai KKM maksimal 100.',
+        'kkm_score.min' => 'Nilai KKM Minimal 1.',
 
         'max_attempts.integer' => 'Jumlah percobaan harus berupa angka.',
         'max_attempts.min' => 'Jumlah percobaan minimal 1.',
