@@ -1,14 +1,9 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
-<<<<<<< HEAD
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SiswaController;
-use App\Http\Controllers\TeacherCredentialController;
-=======
+
 use App\Http\Controllers\ExamResultController;
 use App\Http\Controllers\SiswaController;
->>>>>>> refactor/ExamResult-solid
 use App\Http\Controllers\UserExamController;
 use App\Http\Controllers\UserAnswerController;
 use App\Http\Controllers\BarangController;
@@ -48,11 +43,7 @@ Route::middleware('throttle:api')->group(function () {
     Route::post('/register',         [AuthController::class, 'register']);
     Route::post('/forgot-password',  [AuthController::class, 'forgotPassword']);
     Route::post('/reset-password',   [AuthController::class, 'resetPassword']);
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> refactor/ExamResult-solid
     // Protected: must be authenticated via Sanctum
     Route::middleware('auth:sanctum')->group(function () {
         // Common user actions
@@ -62,11 +53,10 @@ Route::middleware('throttle:api')->group(function () {
 
         // 1. Admin-only
         Route::middleware('role:admin')->prefix('admin')->group(function () {
-<<<<<<< HEAD
+
             // Dashboard
             Route::get('dashboard', [DashboardController::class,'dashboardAdmin']);
-=======
->>>>>>> refactor/ExamResult-solid
+
             // Guru management
             Route::get('gurus',        [AdminController::class, 'index']);
             Route::get('gurus/{id}',   [AdminController::class, 'show']);
@@ -75,14 +65,7 @@ Route::middleware('throttle:api')->group(function () {
             // Finance overview
             Route::get('finance',      [AdminController::class, 'keuangan']);
             // Subscriptions
-<<<<<<< HEAD
-            Route::get('subscriptions',                   [SubscriptionController::class, 'index']);
-            Route::put('subscriptions/{subscription}',    [SubscriptionController::class, 'update']);
-            Route::get('subscriptions/{subscription}',    [SubscriptionController::class, 'show']);
-            // System settings
-            Route::get('settings',     [SystemSettingController::class, 'index']);
-            Route::put('settings',     [SystemSettingController::class, 'update']);
-=======
+
             Route::get('subscriptions',                   [SubscriptionController::class,'index']);
             Route::put('subscriptions/{subscription}',    [SubscriptionController::class,'update']);
             Route::get('subscriptions/{subscription}',    [SubscriptionController::class,'show']);
@@ -91,14 +74,14 @@ Route::middleware('throttle:api')->group(function () {
             Route::put('settings',     [SystemSettingController::class, 'update']);
             // Dashboard
             Route::get('dashboard',    [DashboardController::class, 'index']);
->>>>>>> refactor/ExamResult-solid
+
             // Audit logs
             Route::get('audit-logs',   [DashboardController::class, 'auditLogs']);
         });
 
         // 2. Guru-only
         Route::middleware('role:guru')->prefix('guru')->group(function () {
-<<<<<<< HEAD
+
 
             // Profile
             Route::get('profile',                  [ProfileController::class, 'index']);
@@ -113,7 +96,7 @@ Route::middleware('throttle:api')->group(function () {
             Route::post('questions/attach', [QuestionController::class, 'attachToExam']);
             Route::delete('questions/{question}', [QuestionController::class, 'detach']);
 
-=======
+
             // Bank soal
             Route::get('bank-soal',                 [QuestionController::class, 'bank']);
             Route::post   ('questions/attach', [QuestionController::class,'attachToExam']);
@@ -124,13 +107,13 @@ Route::middleware('throttle:api')->group(function () {
             Route::post('exam-results', [ExamResultController::class, 'store']);
             Route::put('exam-results/{id}', [ExamResultController::class, 'update']);
             Route::delete('exam-results/{id}', [ExamResultController::class, 'destroy']);
->>>>>>> refactor/ExamResult-solid
+
             // Profile
             Route::get('profile',                   [GuruController::class, 'index']);
             Route::get('profile/{id}',              [GuruController::class, 'show']);
             Route::put('profile',                   [GuruController::class, 'update']);
             Route::post('profile/avatar',           [GuruController::class, 'updateAvatar']);
-<<<<<<< HEAD
+
             Route::delete('profile/avatar',         [GuruController::class, 'destroyAvatar']);
             // Exams & Questions
             Route::apiResource('exams',            ExamController::class);
@@ -142,23 +125,12 @@ Route::middleware('throttle:api')->group(function () {
             Route::apiResource('categories',       CategoryController::class)
                 ->shallow();
             Route::get('/api-key', [TeacherCredentialController::class,'showApiKey']);
-=======
-            // Exams & Questions
-            Route::apiResource('exams',            ExamController::class);
-            Route::apiResource('exams.questions',  QuestionController::class);
-            // My subscriptions
-            Route::get('subscriptions',             [SubscriptionController::class,'subscriptions']);
-            Route::get('plans',             [SubscriptionController::class,'plan']);
-            Route::post('subscriptions',            [SubscriptionController::class,'store']);
-            // Categories
-            Route::apiResource('categories',       CategoryController::class)
-                 ->shallow();
->>>>>>> refactor/ExamResult-solid
+
         });
 
         // 3. User-only (siswa)
         Route::middleware('role:user')->prefix('user')->group(function () {
-<<<<<<< HEAD
+
 
             // Profile
             Route::get('profile',                  [ProfileController::class, 'index']);
@@ -168,14 +140,8 @@ Route::middleware('throttle:api')->group(function () {
             Route::delete('profile/avatar',        [ProfileController::class,'destroyAvatar']);
             // Dashboard
             Route::get('dashboard',[DashboardController::class,'dashboardSiswa']);
-=======
->>>>>>> refactor/ExamResult-solid
-            // Profile
-            Route::get('profile',                  [SiswaController::class, 'index']);
-            Route::get('profile/{id}',             [SiswaController::class, 'show']);
-            Route::put('profile',                  [SiswaController::class, 'update']);
-            Route::post('profile/avatar',          [SiswaController::class, 'updateAvatar']);
-<<<<<<< HEAD
+
+
             Route::delete('profile/avatar',        [SiswaController::class,'destroyAvatar']);
             // Categories
             Route::get('categories',               [CategoryController::class, 'indexActive']);
@@ -183,17 +149,12 @@ Route::middleware('throttle:api')->group(function () {
             Route::get('categories/{categories}',  [CategoryController::class, 'show']);
             // Exams
             Route::post('/user/exam/join', [ExamController::class, 'examJoin']);
-=======
-            // Categories
-            Route::get('categories',               [CategoryController::class, 'indexActive']);
-            Route::get('categories/{category:slug}', [CategoryController::class, 'showBySlug']);
-            Route::get('categories/{categories}',  [CategoryController::class, 'show']);
-            // Exam Result
+
             Route::get('exam-results', [ExamResultController::class, 'index']);
             Route::get('exam-results/{id}', [ExamResultController::class, 'show']);
             // Exams
             Route::post('exam/join',[ExamController::class, 'examJoin']);
->>>>>>> refactor/ExamResult-solid
+
             Route::get('exams',                    [ExamController::class, 'available']);
             Route::get('exam/{exam}',              [ExamController::class, 'show']);
             Route::get('exam',                     [ExamController::class, 'index']);
