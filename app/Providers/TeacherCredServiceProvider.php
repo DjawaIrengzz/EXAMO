@@ -5,7 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\TeacherCredentialRepository;
 use App\Interfaces\TeacherCredentialRepositoryInterface;
-class AppServiceProvider extends ServiceProvider
+class TeacherCredServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
